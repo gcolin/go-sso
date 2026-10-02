@@ -1,0 +1,9 @@
+<nav class="admin-settings-nav" aria-label="settings">
+  <ul>
+    <li><a href="{{basePath}}/admin/settings/server"{{#settingsServerActive}} aria-current="page"{{/settingsServerActive}}>{{t.admin.settings.navServer}}</a></li>
+    <li><a href="{{basePath}}/admin/settings/security"{{#settingsSecurityActive}} aria-current="page"{{/settingsSecurityActive}}>{{t.admin.settings.navSecurity}}</a></li>
+    <li><a href="{{basePath}}/admin/settings/federation"{{#settingsFederationActive}} aria-current="page"{{/settingsFederationActive}}>{{t.admin.settings.navFederation}}</a></li>
+    <li><a href="{{basePath}}/admin/settings/mail"{{#settingsMailActive}} aria-current="page"{{/settingsMailActive}}>{{t.admin.settings.navMail}}</a></li>
+    <li><a href="{{basePath}}/admin/clients"{{#settingsClientsActive}} aria-current="page"{{/settingsClientsActive}}>{{t.admin.settings.navClients}}</a></li>
+  </ul>
+</nav>

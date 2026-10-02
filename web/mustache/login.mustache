@@ -1,0 +1,41 @@
+<h1>{{t.login.heading}}</h1>
+{{#clientDisplayName}}
+  <p class="hint">{{#m}}login.clientRequired|{{clientDisplayName}}{{/m}}</p>
+{{/clientDisplayName}}
+{{^clientDisplayName}}
+  {{#clientId}}
+    <p class="hint">{{#m}}login.clientRequired|{{clientId}}{{/m}}</p>
+  {{/clientId}}
+{{/clientDisplayName}}
+{{> alerts}}
+
+{{#hasIdentityProviders}}
+  <div class="stack">
+    {{#identityProviders}}
+      <a role="button" class="outline" href="{{loginUrl}}">
+        {{#logo}}<i class="idp-logo bi {{logo}}" aria-hidden="true"></i>{{/logo}}
+        {{#m}}login.withProvider|{{displayName}}{{/m}}
+      </a>
+    {{/identityProviders}}
+  </div>
+  <p class="hint center">{{t.login.orLocal}}</p>
+{{/hasIdentityProviders}}
+
+<form method="post" action="{{basePath}}/login">
+  {{> csrfField}}
+  <input type="hidden" name="returnUrl" value="{{returnUrl}}"/>
+  {{#clientId}}<input type="hidden" name="clientId" value="{{clientId}}"/>{{/clientId}}
+  <label for="email">{{t.login.email}}
+    <input id="email" name="email" type="email" required autocomplete="username"/>
+  </label>
+  <label for="password">{{t.login.password}}
+    <input id="password" name="password" type="password" required autocomplete="current-password"/>
+  </label>
+  <button type="submit">{{t.login.submit}}</button>
+</form>
+
+{{#publicRegistrationEnabled}}
+  <p class="after-form">
+    <a href="{{basePath}}/register?returnUrl={{returnUrlEncoded}}{{#clientId}}&amp;clientId={{clientId}}{{/clientId}}">{{t.login.registerLink}}</a>
+  </p>
+{{/publicRegistrationEnabled}}

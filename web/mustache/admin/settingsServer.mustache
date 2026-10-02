@@ -1,0 +1,34 @@
+<header class="admin-page-header">
+  <h1>{{t.admin.settings.server.heading}}</h1>
+  <p class="hint">{{t.admin.settings.server.help}}</p>
+</header>
+{{> admin/settingsNav}}
+{{> alerts}}
+
+<article class="admin-table-panel">
+  <form method="post" action="{{basePath}}/admin/settings/server">
+    {{> csrfField}}
+    <label for="host">{{t.admin.settings.server.host}}
+      <input id="host" name="host" type="text" required value="{{formHost}}"/>
+    </label>
+    <label for="port">{{t.admin.settings.server.port}}
+      <input id="port" name="port" type="number" min="1" max="65535" required value="{{formPort}}"/>
+    </label>
+    <p class="hint">{{t.admin.settings.server.hostPortHint}}</p>
+    <label for="publicBaseUrl">{{t.admin.settings.server.publicBaseUrl}}
+      <input id="publicBaseUrl" name="publicBaseUrl" type="url" required value="{{formPublicBaseUrl}}"/>
+    </label>
+    <label for="title">{{t.admin.settings.server.title}}
+      <input id="title" name="title" type="text" required value="{{formTitle}}"/>
+    </label>
+    <label for="realm">{{t.admin.settings.server.realm}}
+      <input id="realm" name="realm" type="text" value="{{formRealm}}" placeholder="optional"/>
+    </label>
+    <label for="defaultLocale">{{t.admin.settings.server.defaultLocale}}
+      <input id="defaultLocale" name="defaultLocale" type="text" required value="{{formDefaultLocale}}" placeholder="fr"/>
+    </label>
+    <div class="page-actions">
+      <button type="submit">{{t.admin.settings.save}}</button>
+    </div>
+  </form>
+</article>

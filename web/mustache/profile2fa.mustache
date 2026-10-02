@@ -1,0 +1,62 @@
+<article class="panel">
+  <h1>{{t.profile2fa.heading}}</h1>
+  <p class="hint">{{t.profile2fa.hint}}</p>
+  {{> alerts}}
+
+  {{#totpEnabled}}
+    <p class="alert alert-success" role="alert">{{t.profile2fa.enabled}}</p>
+    <form method="post" action="{{basePath}}/profile/2fa/disable"
+          data-confirm="{{disable2faConfirm}}">
+      {{> csrfField}}
+      {{#user.hasLocalPassword}}
+      <label for="password">{{t.profile2fa.password}}
+        <input id="password" name="password" type="password" required autocomplete="current-password"/>
+      </label>
+      {{/user.hasLocalPassword}}
+      <label for="code">{{t.profile2fa.code}}
+        <input id="code" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}"
+               maxlength="6" required autocomplete="one-time-code" placeholder="000000"/>
+      </label>
+      <div class="page-actions">
+        <button type="submit" class="contrast">{{t.profile2fa.disable}}</button>
+        <a role="button" class="secondary" href="{{basePath}}/profile">{{t.profile2fa.backProfile}}</a>
+      </div>
+    </form>
+  {{/totpEnabled}}
+  {{^totpEnabled}}
+    {{#setupMode}}
+      <p>{{t.profile2fa.scanSecret}}</p>
+      {{#otpAuthUri}}
+        <figure class="totp-qr" aria-label="{{t.profile2fa.qrAlt}}">
+          <div id="totp-qr" data-otpauth-uri="{{otpAuthUri}}"></div>
+        </figure>
+        <script src="{{basePath}}/static/js/qrcode.min.js"></script>
+        <script src="{{basePath}}/static/js/totp-qr.js"></script>
+      {{/otpAuthUri}}
+      <p><code class="secret">{{totpSecret}}</code></p>
+      <p class="hint">{{t.profile2fa.uri}} <code>{{otpAuthUri}}</code></p>
+
+      <form method="post" action="{{basePath}}/profile/2fa/confirm">
+        {{> csrfField}}
+        <label for="code">{{t.profile2fa.confirmCode}}
+          <input id="code" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}"
+                 maxlength="6" required autocomplete="one-time-code" placeholder="000000"/>
+        </label>
+        <div class="page-actions">
+          <button type="submit">{{t.profile2fa.enable}}</button>
+          <a role="button" class="secondary" href="{{basePath}}/profile">{{t.profile2fa.cancel}}</a>
+        </div>
+      </form>
+    {{/setupMode}}
+    {{^setupMode}}
+      <p>{{t.profile2fa.disabled}}</p>
+      <form method="post" action="{{basePath}}/profile/2fa/setup">
+        {{> csrfField}}
+        <div class="page-actions">
+          <button type="submit">{{t.profile2fa.setup}}</button>
+          <a role="button" class="secondary" href="{{basePath}}/profile">{{t.profile2fa.backProfile}}</a>
+        </div>
+      </form>
+    {{/setupMode}}
+  {{/totpEnabled}}
+</article>

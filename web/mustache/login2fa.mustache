@@ -1,0 +1,13 @@
+<h1>{{t.login2fa.heading}}</h1>
+<p class="hint">{{#m}}login2fa.hint|{{email}}{{/m}}</p>
+{{> alerts}}
+
+<form method="post" action="{{basePath}}/login/2fa">
+  {{> csrfField}}
+  <input type="hidden" name="returnUrl" value="{{returnUrl}}"/>
+  <label for="code">{{t.login2fa.code}}
+    <input id="code" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}"
+           maxlength="6" required autofocus autocomplete="one-time-code" placeholder="000000"/>
+  </label>
+  <button type="submit">{{t.login2fa.verify}}</button>
+</form>

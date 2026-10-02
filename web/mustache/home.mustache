@@ -1,0 +1,15 @@
+<article class="panel">
+  <h1>{{t.home.welcome}}</h1>
+  {{#user.name}}
+    <p class="lead">{{#m}}home.connectedAsName|{{user.name}}|{{user.email}}{{/m}}</p>
+  {{/user.name}}
+  {{^user.name}}
+    <p class="lead">{{#m}}home.connectedAsEmail|{{user.email}}{{/m}}</p>
+  {{/user.name}}
+  <div class="page-actions">
+    <a role="button" href="{{basePath}}/profile">{{t.home.editProfile}}</a>
+    {{#user.admin}}
+      <a role="button" class="secondary" href="{{basePath}}/admin/clients">{{t.home.adminOAuth}}</a>
+    {{/user.admin}}
+  </div>
+</article>

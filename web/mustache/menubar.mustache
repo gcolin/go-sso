@@ -1,0 +1,25 @@
+<nav class="navbar">
+  <ul>
+    <li>
+      <a class="brand" href="{{basePath}}/">
+        <strong>{{appTitle}}</strong>
+      </a>
+    </li>
+  </ul>
+  {{#user}}
+  <ul class="nav-links">
+    <li><a href="{{basePath}}/"{{#navHomeActive}} aria-current="page"{{/navHomeActive}}>{{t.nav.home}}</a></li>
+    {{#admin}}
+      <li><a href="{{basePath}}/admin/users"{{#navUsersActive}} aria-current="page"{{/navUsersActive}}>{{t.nav.users}}</a></li>
+      <li><a href="{{basePath}}/admin/settings"{{#navSettingsActive}} aria-current="page"{{/navSettingsActive}}>{{t.nav.settings}}</a></li>
+    {{/admin}}
+    <li><a href="{{basePath}}/profile"{{#navProfileActive}} aria-current="page"{{/navProfileActive}}>{{t.nav.profile}}</a></li>
+    <li>
+      <form method="post" action="{{basePath}}/logout" class="logout-form">
+        {{> csrfField}}
+        <button type="submit" class="nav-logout">{{t.nav.logout}}</button>
+      </form>
+    </li>
+  </ul>
+  {{/user}}
+</nav>

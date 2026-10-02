@@ -1,0 +1,64 @@
+<header class="admin-page-header">
+  <h1>{{t.admin.settings.federation.editHeading}}</h1>
+  <p class="hint">{{t.admin.settings.federation.editHelp}}</p>
+</header>
+{{> admin/settingsNav}}
+{{> alerts}}
+
+<article class="admin-table-panel">
+  <form method="post" action="{{basePath}}/admin/settings/federation/providers/update">
+    {{> csrfField}}
+    <input type="hidden" name="id" value="{{formId}}"/>
+    <label for="id">{{t.admin.settings.federation.providerId}}
+      <input id="id" type="text" value="{{formId}}" disabled/>
+    </label>
+    <label for="enabled">
+      <input type="checkbox" id="enabled" name="enabled" value="true"{{#formEnabled}} checked{{/formEnabled}}/>
+      {{t.admin.settings.federation.enabled}}
+    </label>
+    <label for="displayName">{{t.admin.settings.federation.displayName}}
+      <input id="displayName" name="displayName" type="text" value="{{formDisplayName}}"/>
+    </label>
+    <label for="logo">{{t.admin.settings.federation.logo}}
+      <input id="logo" name="logo" type="text" value="{{formLogo}}" placeholder="bi-google"/>
+      <small class="hint">{{t.admin.settings.federation.logoHelp}}</small>
+    </label>
+    <label for="clientId">{{t.admin.settings.federation.clientId}}
+      <input id="clientId" name="clientId" type="text" value="{{formClientId}}"/>
+    </label>
+    <label for="clientSecret">{{t.admin.settings.federation.clientSecret}}
+      <input id="clientSecret" name="clientSecret" type="password" autocomplete="new-password" placeholder="{{t.admin.settings.federation.secretKeep}}"/>
+    </label>
+    {{#hasClientSecret}}
+      <p class="hint">{{t.admin.settings.federation.secretSet}}</p>
+    {{/hasClientSecret}}
+    <label for="authorizationUrl">{{t.admin.settings.federation.authorizationUrl}}
+      <input id="authorizationUrl" name="authorizationUrl" type="url" value="{{formAuthorizationUrl}}"/>
+    </label>
+    <label for="tokenUrl">{{t.admin.settings.federation.tokenUrl}}
+      <input id="tokenUrl" name="tokenUrl" type="url" value="{{formTokenUrl}}"/>
+    </label>
+    <label for="userInfoUrl">{{t.admin.settings.federation.userInfoUrl}}
+      <input id="userInfoUrl" name="userInfoUrl" type="url" value="{{formUserInfoUrl}}"/>
+    </label>
+    <label for="scopes">{{t.admin.settings.federation.scopes}}
+      <input id="scopes" name="scopes" type="text" value="{{formScopes}}"/>
+    </label>
+    <label for="emailClaim">{{t.admin.settings.federation.emailClaim}}
+      <input id="emailClaim" name="emailClaim" type="text" value="{{formEmailClaim}}"/>
+    </label>
+    <label for="nameClaim">{{t.admin.settings.federation.nameClaim}}
+      <input id="nameClaim" name="nameClaim" type="text" value="{{formNameClaim}}"/>
+    </label>
+    <label for="subjectClaim">{{t.admin.settings.federation.subjectClaim}}
+      <input id="subjectClaim" name="subjectClaim" type="text" value="{{formSubjectClaim}}"/>
+    </label>
+    <label for="redirectUri">{{t.admin.settings.federation.redirectUri}}
+      <input id="redirectUri" name="redirectUri" type="url" value="{{formRedirectUri}}"/>
+    </label>
+    <div class="page-actions">
+      <button type="submit">{{t.admin.settings.federation.saveProvider}}</button>
+      <a role="button" class="secondary" href="{{basePath}}/admin/settings/federation">{{t.admin.settings.federation.cancelEdit}}</a>
+    </div>
+  </form>
+</article>

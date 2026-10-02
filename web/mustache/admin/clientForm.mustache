@@ -1,0 +1,49 @@
+<header class="admin-page-header">
+  <h1>{{#editingClient}}{{t.admin.clientForm.editHeading}}{{/editingClient}}{{^editingClient}}{{t.admin.clientForm.heading}}{{/editingClient}}</h1>
+  <p class="hint">{{#editingClient}}{{t.admin.clientForm.editHint}}{{/editingClient}}{{^editingClient}}{{t.admin.clientForm.hint}}{{/editingClient}}</p>
+</header>
+{{> admin/settingsNav}}
+{{> alerts}}
+
+<article class="admin-table-panel">
+  <form method="post" action="{{#formAction}}{{formAction}}{{/formAction}}{{^formAction}}{{basePath}}/admin/clients{{/formAction}}">
+    {{> csrfField}}
+    <label for="clientId">{{t.admin.clientForm.clientId}}
+      {{#editingClient}}
+        <input id="clientId" name="clientId" type="text" required readonly
+               value="{{formClientIdValue}}"/>
+      {{/editingClient}}
+      {{^editingClient}}
+        <input id="clientId" name="clientId" type="text" required
+               value="{{formClientIdValue}}" placeholder="{{t.admin.clientForm.clientIdPlaceholder}}"/>
+      {{/editingClient}}
+    </label>
+    <label for="displayName">{{t.admin.clientForm.displayName}}
+      <input id="displayName" name="displayName" type="text"
+             value="{{formDisplayNameValue}}" placeholder="{{t.admin.clientForm.displayNamePlaceholder}}"/>
+      <small class="hint">{{t.admin.clientForm.displayNameHelp}}</small>
+    </label>
+    <label for="redirectUri">{{t.admin.clientForm.redirectUri}}
+      <input id="redirectUri" name="redirectUri" type="url" required
+             value="{{formRedirectUriValue}}" placeholder="{{t.admin.clientForm.redirectUriPlaceholder}}"/>
+    </label>
+    <label for="theme">{{t.admin.clientForm.theme}}
+      <select id="theme" name="theme">
+        {{#themeOptions}}
+          <option value="{{id}}"{{#selected}} selected{{/selected}}>{{label}}</option>
+        {{/themeOptions}}
+      </select>
+      <small class="hint">{{t.admin.clientForm.themeHelp}}</small>
+    </label>
+    {{^editingClient}}
+    <label for="confidential">
+      <input type="checkbox" id="confidential" name="confidential" value="true"{{#formConfidential}} checked{{/formConfidential}}/>
+      {{t.admin.clientForm.confidential}}
+    </label>
+    {{/editingClient}}
+    <div class="page-actions">
+      <button type="submit">{{#editingClient}}{{t.admin.clientForm.save}}{{/editingClient}}{{^editingClient}}{{t.admin.clientForm.create}}{{/editingClient}}</button>
+      <a role="button" class="secondary" href="{{basePath}}/admin/clients">{{t.admin.clientForm.cancel}}</a>
+    </div>
+  </form>
+</article>

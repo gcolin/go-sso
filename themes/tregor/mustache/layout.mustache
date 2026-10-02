@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="{{lang}}" data-bs-theme="light">
+{{> head}}
+<body class="tregor-theme{{#authPage}} auth-page{{/authPage}}">
+  {{> menubar}}
+  <main class="container py-4{{#authPage}} auth-main{{/authPage}}">
+    {{#authPage}}
+      <div class="card shadow-sm auth-card mx-auto">
+        <div class="card-body p-4">
+          {{{content}}}
+        </div>
+      </div>
+    {{/authPage}}
+    {{^authPage}}
+      {{{content}}}
+    {{/authPage}}
+  </main>
+  {{> footer}}
+  <script src="{{basePath}}/themes/tregor/static/js/bootstrap.bundle.min.js" defer></script>
+  <script src="{{basePath}}/static/js/ui.js" defer></script>
+</body>
+</html>

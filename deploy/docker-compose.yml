@@ -1,0 +1,16 @@
+# Example compose — adjust host paths and ports for your environment.
+# Config and themes stay on the host (bind mounts), not in the image.
+
+services:
+  sso:
+    build: .
+    image: datanode-sso:latest
+    container_name: datanode-sso
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DATANODE_SSO_CONFIG: /config/sso-server.json
+    volumes:
+      - ./sso-server.json:/config/sso-server.json:ro
+      - ./themes:/config/themes:ro

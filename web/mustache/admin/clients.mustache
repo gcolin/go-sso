@@ -1,0 +1,58 @@
+<header class="admin-page-header">
+  <h1>{{t.admin.clients.heading}}</h1>
+  <p class="hint">{{t.admin.clients.help}}</p>
+</header>
+{{> admin/settingsNav}}
+{{> alerts}}
+
+<article class="admin-table-panel">
+  <div class="admin-toolbar">
+    <a role="button" href="{{basePath}}/admin/clients/new">{{t.admin.clients.new}}</a>
+  </div>
+  {{#hasClientRows}}
+    <div class="admin-table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>{{t.admin.clients.displayName}}</th>
+            <th>{{t.admin.clients.clientId}}</th>
+            <th>{{t.admin.clients.redirectUri}}</th>
+            <th>{{t.admin.clients.theme}}</th>
+            <th>{{t.admin.clients.type}}</th>
+            <th>{{t.admin.users.actions}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#clientRows}}
+            <tr>
+              <td>{{displayLabel}}</td>
+              <td><code>{{clientId}}</code></td>
+              <td>{{redirectUri}}</td>
+              <td>{{themeLabel}}</td>
+              <td>
+                {{#confidential}}
+                  <span class="badge">{{t.admin.clients.confidential}}</span>
+                {{/confidential}}
+                {{^confidential}}
+                  <span class="badge badge-muted">{{t.admin.clients.public}}</span>
+                {{/confidential}}
+              </td>
+              <td class="table-actions">
+                <a role="button" class="outline" href="{{editHref}}">{{t.admin.clients.edit}}</a>
+                <form method="post" action="{{basePath}}/admin/clients/delete"
+                      data-confirm="{{confirmDelete}}">
+                  {{> csrfField}}
+                  <input type="hidden" name="clientId" value="{{clientId}}"/>
+                  <button type="submit" class="outline contrast">{{t.admin.clients.delete}}</button>
+                </form>
+              </td>
+            </tr>
+          {{/clientRows}}
+        </tbody>
+      </table>
+    </div>
+  {{/hasClientRows}}
+  {{^hasClientRows}}
+    <p class="hint">{{t.admin.clients.empty}}</p>
+  {{/hasClientRows}}
+</article>

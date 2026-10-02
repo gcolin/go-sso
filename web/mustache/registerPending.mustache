@@ -1,0 +1,10 @@
+<h1>{{t.registerPending.heading}}</h1>
+<p class="hint">{{#m}}registerPending.hint|{{email}}{{/m}}</p>
+{{> alerts}}
+
+<form method="post" action="{{basePath}}/register/pending">
+  {{> csrfField}}
+  <input type="hidden" name="email" value="{{email}}"/>
+  <input type="hidden" name="returnUrl" value="{{returnUrl}}"/>
+  <button type="submit">{{t.registerPending.confirmed}}</button>
+</form>

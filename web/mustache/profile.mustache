@@ -1,0 +1,57 @@
+<article class="panel">
+  <h1>{{t.profile.heading}}</h1>
+  <p class="hint">{{t.profile.hint}}</p>
+  {{> alerts}}
+
+  <form method="post" action="{{basePath}}/profile">
+    {{> csrfField}}
+    <label for="email">{{t.profile.email}}
+      <input id="email" type="email" value="{{user.email}}" disabled/>
+    </label>
+    <label for="name">{{t.profile.name}}
+      <input id="name" name="name" type="text" required maxlength="200"
+             value="{{profileNameValue}}"
+             placeholder="{{t.profile.namePlaceholder}}"/>
+    </label>
+    {{#user.hasLocalPassword}}
+    <p class="hint">
+      {{t.profile.2faStatus}}
+      {{#user.totpEnabled}}
+        <strong>{{t.profile.2faEnabled}}</strong>
+      {{/user.totpEnabled}}
+      {{^user.totpEnabled}}
+        {{t.profile.2faDisabled}}
+      {{/user.totpEnabled}}
+      — <a href="{{basePath}}/profile/2fa">{{t.profile.2faConfigure}}</a>
+    </p>
+    {{/user.hasLocalPassword}}
+    <div class="page-actions">
+      <button type="submit">{{t.profile.save}}</button>
+      {{#user.hasLocalPassword}}
+      <a role="button" class="secondary" href="{{basePath}}/profile/password">{{t.profile.changePassword}}</a>
+      <a role="button" class="secondary" href="{{basePath}}/profile/2fa">{{t.profile.2fa}}</a>
+      {{/user.hasLocalPassword}}
+      {{^user.hasLocalPassword}}
+      <a role="button" class="secondary" href="{{basePath}}/profile/password">{{t.profile.createPassword}}</a>
+      {{/user.hasLocalPassword}}
+      <a role="button" class="outline secondary" href="{{basePath}}/">{{t.profile.back}}</a>
+    </div>
+  </form>
+
+  {{#canLinkIdentityProviders}}
+  {{#hasIdentityProviders}}
+  <section class="panel" style="margin-top:1.5rem">
+    <h2>{{t.profile.linkProvidersHeading}}</h2>
+    <p class="hint">{{t.profile.linkProvidersHint}}</p>
+    <div class="stack">
+      {{#identityProviders}}
+        <a role="button" class="outline" href="{{loginUrl}}">
+          {{#logo}}<i class="idp-logo bi {{logo}}" aria-hidden="true"></i>{{/logo}}
+          {{#m}}profile.linkWithProvider|{{displayName}}{{/m}}
+        </a>
+      {{/identityProviders}}
+    </div>
+  </section>
+  {{/hasIdentityProviders}}
+  {{/canLinkIdentityProviders}}
+</article>

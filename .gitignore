@@ -1,0 +1,38 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/datanode-sso
+/datanode-sso-*
+/go-sso
+deploy/datanode-sso
+
+# Test / build
+.gotmp/
+*.test
+*.out
+coverage.out
+coverage.html
+
+# Local config & secrets (never commit)
+sso-server.json
+sso-server.dev.json
+sso-server*.local.json
+*.pem
+*.key
+.env
+.env.*
+
+# Logs
+*.log
+sso-out.log
+sso-err.log
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

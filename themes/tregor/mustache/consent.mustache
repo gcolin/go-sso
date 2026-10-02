@@ -1,0 +1,18 @@
+<h1 class="h3 mb-3">{{t.consent.heading}}</h1>
+<p class="lead fs-6">{{#m}}consent.request|{{clientDisplayName}}|{{user.email}}{{/m}}</p>
+{{#hasScopeLabels}}
+  <p class="text-muted">{{t.consent.permissionsIntro}}</p>
+  <ul class="mb-4">
+    {{#scopeLabels}}
+      <li>{{.}}</li>
+    {{/scopeLabels}}
+  </ul>
+{{/hasScopeLabels}}
+<form method="post" action="{{basePath}}/oauth/authorize/decision">
+  {{> csrfField}}
+  <input type="hidden" name="request_id" value="{{requestId}}"/>
+  <div class="d-flex flex-wrap gap-2">
+    <button type="submit" name="decision" value="allow" class="btn btn-primary">{{t.consent.allow}}</button>
+    <button type="submit" name="decision" value="deny" class="btn btn-outline-secondary">{{t.consent.deny}}</button>
+  </div>
+</form>

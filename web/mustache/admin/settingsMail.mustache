@@ -1,0 +1,44 @@
+<header class="admin-page-header">
+  <h1>{{t.admin.settings.mail.heading}}</h1>
+  <p class="hint">{{t.admin.settings.mail.help}}</p>
+</header>
+{{> admin/settingsNav}}
+{{> alerts}}
+
+<article class="admin-table-panel">
+  <form method="post" action="{{basePath}}/admin/settings/mail">
+    {{> csrfField}}
+    <label for="enabled">
+      <input type="checkbox" id="enabled" name="enabled" value="true"{{#formEnabled}} checked{{/formEnabled}}/>
+      {{t.admin.settings.mail.enabled}}
+    </label>
+    <label for="smtpHost">{{t.admin.settings.mail.smtpHost}}
+      <input id="smtpHost" name="smtpHost" type="text" required value="{{formSmtpHost}}"/>
+    </label>
+    <label for="smtpPort">{{t.admin.settings.mail.smtpPort}}
+      <input id="smtpPort" name="smtpPort" type="number" min="1" required value="{{formSmtpPort}}"/>
+    </label>
+    <label for="username">{{t.admin.settings.mail.username}}
+      <input id="username" name="username" type="text" value="{{formUsername}}" autocomplete="username"/>
+    </label>
+    <label for="password">{{t.admin.settings.mail.password}}
+      <input id="password" name="password" type="password" autocomplete="new-password" placeholder="{{t.admin.settings.mail.passwordKeep}}"/>
+    </label>
+    {{#hasPassword}}
+      <p class="hint">{{t.admin.settings.mail.passwordSet}}</p>
+    {{/hasPassword}}
+    <label for="fromAddress">{{t.admin.settings.mail.fromAddress}}
+      <input id="fromAddress" name="fromAddress" type="email" value="{{formFromAddress}}"/>
+    </label>
+    <label for="fromName">{{t.admin.settings.mail.fromName}}
+      <input id="fromName" name="fromName" type="text" value="{{formFromName}}"/>
+    </label>
+    <label for="startTls">
+      <input type="checkbox" id="startTls" name="startTls" value="true"{{#formStartTls}} checked{{/formStartTls}}/>
+      {{t.admin.settings.mail.startTls}}
+    </label>
+    <div class="page-actions">
+      <button type="submit">{{t.admin.settings.save}}</button>
+    </div>
+  </form>
+</article>

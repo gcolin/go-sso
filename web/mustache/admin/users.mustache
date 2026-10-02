@@ -1,0 +1,89 @@
+<header class="admin-page-header">
+  <h1>{{t.admin.users.heading}}</h1>
+  <p class="hint">{{t.admin.users.help}}</p>
+</header>
+{{> alerts}}
+
+<article class="admin-table-panel">
+  <div class="admin-toolbar">
+    <a role="button" href="{{basePath}}/admin/users/new">{{t.admin.users.new}}</a>
+  </div>
+  {{#hasUserRows}}
+    <div class="admin-table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>{{t.admin.users.id}}</th>
+            <th>{{t.admin.users.email}}</th>
+            <th>{{t.admin.users.name}}</th>
+            <th>{{t.admin.users.type}}</th>
+            <th>{{t.admin.users.emailVerified}}</th>
+            <th>{{t.admin.users.2fa}}</th>
+            <th>{{t.admin.users.actions}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#userRows}}
+            <tr>
+              <td><code>{{id}}</code></td>
+              <td>{{email}}</td>
+              <td>{{name}}</td>
+              <td>
+                {{#adminType}}
+                  <span class="badge">{{t.admin.users.typeAdmin}}</span>
+                {{/adminType}}
+                {{^adminType}}
+                  <span class="badge badge-muted">{{t.admin.users.typeUser}}</span>
+                {{/adminType}}
+              </td>
+              <td>
+                {{#emailVerified}}
+                  <span class="badge badge-ok">{{t.admin.users.verified}}</span>
+                {{/emailVerified}}
+                {{^emailVerified}}
+                  <span class="badge badge-warn">{{t.admin.users.notVerified}}</span>
+                {{/emailVerified}}
+              </td>
+              <td>
+                {{#totpEnabled}}
+                  <span class="badge badge-ok">{{t.admin.users.2faOn}}</span>
+                {{/totpEnabled}}
+                {{^totpEnabled}}
+                  <span class="badge badge-muted">{{t.admin.users.2faOff}}</span>
+                {{/totpEnabled}}
+              </td>
+              <td class="table-actions">
+                <a href="{{editHref}}">{{t.admin.users.edit}}</a>
+                {{#canResendVerification}}
+                  <form method="post" action="{{basePath}}/admin/users/resend-verification"
+                        data-confirm="{{confirmResend}}">
+                    {{> csrfField}}
+                    <input type="hidden" name="userId" value="{{id}}"/>
+                    <button type="submit" class="outline secondary">{{t.admin.users.resendVerification}}</button>
+                  </form>
+                {{/canResendVerification}}
+                {{#totpEnabled}}
+                  <form method="post" action="{{basePath}}/admin/users/disable-2fa"
+                        data-confirm="{{confirmRemove2fa}}">
+                    {{> csrfField}}
+                    <input type="hidden" name="userId" value="{{id}}"/>
+                    <button type="submit" class="outline secondary">{{t.admin.users.remove2fa}}</button>
+                  </form>
+                {{/totpEnabled}}
+                <form method="post" action="{{basePath}}/admin/users/delete"
+                      data-confirm="{{confirmDelete}}">
+                  {{> csrfField}}
+                  <input type="hidden" name="userId" value="{{id}}"/>
+                  <button type="submit" class="outline contrast">{{t.admin.users.delete}}</button>
+                </form>
+              </td>
+            </tr>
+          {{/userRows}}
+        </tbody>
+      </table>
+    </div>
+  {{/hasUserRows}}
+  {{^hasUserRows}}
+    <p class="hint">{{t.admin.users.empty}}</p>
+  {{/hasUserRows}}
+</article>

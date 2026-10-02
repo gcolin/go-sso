@@ -1,0 +1,43 @@
+<h1 class="h3 mb-3">{{t.login.heading}}</h1>
+{{#clientDisplayName}}
+  <p class="text-muted">{{#m}}login.clientRequired|{{clientDisplayName}}{{/m}}</p>
+{{/clientDisplayName}}
+{{^clientDisplayName}}
+  {{#clientId}}
+    <p class="text-muted">{{#m}}login.clientRequired|{{clientId}}{{/m}}</p>
+  {{/clientId}}
+{{/clientDisplayName}}
+{{> alerts}}
+
+{{#hasIdentityProviders}}
+  <div class="d-grid gap-2 mb-3">
+    {{#identityProviders}}
+      <a class="btn btn-outline-primary d-inline-flex align-items-center justify-content-center gap-2" href="{{loginUrl}}">
+        {{#logo}}<i class="idp-logo bi {{logo}}" aria-hidden="true"></i>{{/logo}}
+        {{#m}}login.withProvider|{{displayName}}{{/m}}
+      </a>
+    {{/identityProviders}}
+  </div>
+  <p class="text-muted text-center small">{{t.login.orLocal}}</p>
+{{/hasIdentityProviders}}
+
+<form method="post" action="{{basePath}}/login">
+  {{> csrfField}}
+  <input type="hidden" name="returnUrl" value="{{returnUrl}}"/>
+  {{#clientId}}<input type="hidden" name="clientId" value="{{clientId}}"/>{{/clientId}}
+  <div class="mb-3">
+    <label class="form-label" for="email">{{t.login.email}}</label>
+    <input class="form-control" id="email" name="email" type="email" required autocomplete="username"/>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="password">{{t.login.password}}</label>
+    <input class="form-control" id="password" name="password" type="password" required autocomplete="current-password"/>
+  </div>
+  <button type="submit" class="btn btn-primary w-100">{{t.login.submit}}</button>
+</form>
+
+{{#publicRegistrationEnabled}}
+  <p class="mt-3 mb-0 text-center">
+    <a href="{{basePath}}/register?returnUrl={{returnUrlEncoded}}{{#clientId}}&amp;clientId={{clientId}}{{/clientId}}">{{t.login.registerLink}}</a>
+  </p>
+{{/publicRegistrationEnabled}}

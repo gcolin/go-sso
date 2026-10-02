@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg navbar-dark tregor-navbar">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-semibold" href="{{basePath}}/">{{appTitle}}</a>
+    {{#user}}
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#tregorNav"
+            aria-controls="tregorNav" aria-expanded="false" aria-label="Menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="tregorNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        <li class="nav-item">
+          <a class="nav-link{{#navHomeActive}} active{{/navHomeActive}}" href="{{basePath}}/"{{#navHomeActive}} aria-current="page"{{/navHomeActive}}>{{t.nav.home}}</a>
+        </li>
+        {{#admin}}
+        <li class="nav-item">
+          <a class="nav-link{{#navUsersActive}} active{{/navUsersActive}}" href="{{basePath}}/admin/users"{{#navUsersActive}} aria-current="page"{{/navUsersActive}}>{{t.nav.users}}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link{{#navSettingsActive}} active{{/navSettingsActive}}" href="{{basePath}}/admin/settings"{{#navSettingsActive}} aria-current="page"{{/navSettingsActive}}>{{t.nav.settings}}</a>
+        </li>
+        {{/admin}}
+        <li class="nav-item">
+          <a class="nav-link{{#navProfileActive}} active{{/navProfileActive}}" href="{{basePath}}/profile"{{#navProfileActive}} aria-current="page"{{/navProfileActive}}>{{t.nav.profile}}</a>
+        </li>
+        <li class="nav-item">
+          <form method="post" action="{{basePath}}/logout" class="d-inline">
+            {{> csrfField}}
+            <button type="submit" class="btn btn-link nav-link">{{t.nav.logout}}</button>
+          </form>
+        </li>
+      </ul>
+    </div>
+    {{/user}}
+  </div>
+</nav>

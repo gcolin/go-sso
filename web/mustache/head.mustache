@@ -1,0 +1,15 @@
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="none"/>
+  <meta name="theme-color" content="{{#themeColor}}{{themeColor}}{{/themeColor}}{{^themeColor}}#0172ad{{/themeColor}}"/>
+  <title>{{pageTitle}} — {{appTitle}}</title>
+  <script>window.__CTX__ = "{{basePath}}";</script>
+  <link rel="icon" href="{{basePath}}/static/favicon.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="{{basePath}}/static/css/pico.min.css"/>
+  <link rel="stylesheet" href="{{basePath}}/static/css/bootstrap-icons.min.css"/>
+  <link rel="stylesheet" href="{{basePath}}/static/css/app.css"/>
+  {{#themeCss}}
+  <link rel="stylesheet" href="{{basePath}}{{themeCss}}"/>
+  {{/themeCss}}
+</head>

@@ -1,0 +1,25 @@
+<h1>{{t.register.heading}}</h1>
+<p class="hint">{{t.register.hint}}</p>
+{{> alerts}}
+
+<form method="post" action="{{basePath}}/register">
+  {{> csrfField}}
+  <input type="hidden" name="returnUrl" value="{{returnUrl}}"/>
+  <label for="email">{{t.register.email}}
+    <input id="email" name="email" type="email" required autocomplete="username" value="{{formEmailValue}}"/>
+  </label>
+  <label for="name">{{t.register.name}}
+    <input id="name" name="name" type="text" autocomplete="name" value="{{formNameValue}}"/>
+  </label>
+  <label for="password">{{t.register.password}}
+    <input id="password" name="password" type="password" required autocomplete="new-password"/>
+  </label>
+  <label for="confirmPassword">{{t.register.confirmPassword}}
+    <input id="confirmPassword" name="confirmPassword" type="password" required autocomplete="new-password"/>
+  </label>
+  <button type="submit">{{t.register.submit}}</button>
+</form>
+
+<p class="after-form">
+  <a href="{{basePath}}/?returnUrl={{returnUrlEncoded}}">{{t.register.backLogin}}</a>
+</p>

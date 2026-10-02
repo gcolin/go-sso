@@ -1,0 +1,157 @@
+/* Trégor theme — complements Bootstrap (tregor.css in this folder); no Pico */
+
+body.tregor-theme {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(160deg, #f5efe6 0%, #e8d8c3 100%);
+  color: #2d1d15;
+  font-family: Inter, "Segoe UI", Roboto, sans-serif;
+}
+
+body.tregor-theme > main.container {
+  flex: 1 0 auto;
+}
+
+.tregor-navbar {
+  background-color: #3a281c;
+  border-bottom: 1px solid #5a4333;
+}
+
+.tregor-navbar .navbar-brand,
+.tregor-navbar .nav-link,
+.tregor-navbar .btn-link.nav-link {
+  color: #fcfaf6;
+  text-decoration: none;
+}
+
+.tregor-navbar .nav-link:hover,
+.tregor-navbar .nav-link.active,
+.tregor-navbar .btn-link.nav-link:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.tregor-navbar .btn-link.nav-link {
+  border: 0;
+  padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);
+  background: transparent;
+  box-shadow: none;
+}
+
+.auth-main {
+  max-width: 28rem;
+}
+
+.auth-card {
+  border-color: #e0d0bc;
+  border-radius: 0.75rem;
+}
+
+.site-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  padding-bottom: 1.25rem;
+  border-top: 1px solid #e0d0bc;
+  color: #7f553d;
+  font-size: 0.875rem;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+/* Bridge remaining Pico-ish base templates under Bootstrap */
+.tregor-theme .hint {
+  color: #7f553d;
+}
+
+.tregor-theme .stack [role="button"],
+.tregor-theme .btn .idp-logo,
+.tregor-theme .idp-logo {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.tregor-theme .page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.tregor-theme .page-actions > * {
+  width: auto;
+}
+
+.tregor-theme button:not(.btn):not(.navbar-toggler):not(.nav-logout),
+.tregor-theme [type="submit"]:not(.btn),
+.tregor-theme [role="button"]:not(.btn) {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #7f553d;
+  background: #7f553d;
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  font: inherit;
+}
+
+.tregor-theme button.secondary:not(.btn),
+.tregor-theme [role="button"].secondary:not(.btn),
+.tregor-theme a[role="button"].secondary:not(.btn) {
+  background: #e8d8c3;
+  border-color: #e8d8c3;
+  color: #2d1d15;
+}
+
+.tregor-theme button.outline:not(.btn),
+.tregor-theme [role="button"].outline:not(.btn),
+.tregor-theme a[role="button"].outline:not(.btn) {
+  background: transparent;
+  color: #7f553d;
+}
+
+.tregor-theme button.contrast:not(.btn),
+.tregor-theme [role="button"].contrast:not(.btn) {
+  background: #8c2f2f;
+  border-color: #8c2f2f;
+  color: #fff;
+}
+
+.tregor-theme label:not(.form-label):not(.form-check-label) {
+  display: block;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.tregor-theme label:not(.form-label) input:not([type="checkbox"]):not([type="hidden"]),
+.tregor-theme label:not(.form-label) select,
+.tregor-theme label:not(.form-label) textarea {
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d6c2ad;
+  border-radius: 0.75rem;
+  background: #fff;
+}
+
+.tregor-theme .alert-error {
+  color: #8c2f2f;
+  background: #f8e8e8;
+  border: 1px solid #8c2f2f;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+}
+
+.tregor-theme .panel,
+.tregor-theme .admin-table-panel,
+.tregor-theme .admin-page-header {
+  background: #fff;
+  border: 1px solid #e0d0bc;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+}

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="{{lang}}">
+<head>
+  <meta charset="UTF-8"/>
+  <title>{{#m}}email.verify.subject|{{appTitle}}{{/m}}</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #fcfaf6; padding: 20px; }
+    .container { max-width: 600px; margin: auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 6px rgba(43,27,20,0.1); }
+    .header { background: #2d1d15; color: #fcfaf6; padding: 20px; text-align: center; }
+    .content { padding: 25px; color: #2b1b14; }
+    a.button { display: inline-block; background-color: #7f553d; color: #ffffff; text-decoration: none; padding: 10px 20px; border-radius: 8px; margin-top: 12px; }
+    .footer { font-size: 12px; color: #777777; text-align: center; padding: 15px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>{{#m}}email.verify.subject|{{appTitle}}{{/m}}</h1>
+    </div>
+    <div class="content">
+      <p>{{#m}}email.verify.greeting|{{userName}}{{/m}}</p>
+      <p>{{t.email.verify.instructions}}</p>
+      <p><a class="button" href="{{verifyUrl}}">{{t.email.verify.linkLabel}}</a></p>
+      <p>{{#m}}email.verify.expiry|{{ttlHours}}{{/m}}</p>
+      <p>{{t.email.verify.ignore}}</p>
+    </div>
+    <div class="footer">
+      {{appTitle}}
+    </div>
+  </div>
+</body>
+</html>

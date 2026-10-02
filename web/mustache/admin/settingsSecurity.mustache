@@ -1,0 +1,45 @@
+<header class="admin-page-header">
+  <h1>{{t.admin.settings.security.heading}}</h1>
+  <p class="hint">{{t.admin.settings.security.help}}</p>
+</header>
+{{> admin/settingsNav}}
+{{> alerts}}
+
+<article class="admin-table-panel">
+  <form method="post" action="{{basePath}}/admin/settings/security">
+    {{> csrfField}}
+    <label for="sessionCookieName">{{t.admin.settings.security.sessionCookieName}}
+      <input id="sessionCookieName" name="sessionCookieName" type="text" required value="{{formSessionCookieName}}"/>
+    </label>
+    <label for="sessionCookieSecure">
+      <input type="checkbox" id="sessionCookieSecure" name="sessionCookieSecure" value="true"{{#formSessionCookieSecure}} checked{{/formSessionCookieSecure}}/>
+      {{t.admin.settings.security.sessionCookieSecure}}
+    </label>
+    <label for="sessionTtlMinutes">{{t.admin.settings.security.sessionTtlMinutes}}
+      <input id="sessionTtlMinutes" name="sessionTtlMinutes" type="number" min="1" required value="{{formSessionTtlMinutes}}"/>
+    </label>
+    <label for="loginRateLimitMaxAttempts">{{t.admin.settings.security.loginRateLimitMaxAttempts}}
+      <input id="loginRateLimitMaxAttempts" name="loginRateLimitMaxAttempts" type="number" min="0" required value="{{formLoginRateLimitMaxAttempts}}"/>
+    </label>
+    <label for="loginRateLimitWindowSeconds">{{t.admin.settings.security.loginRateLimitWindowSeconds}}
+      <input id="loginRateLimitWindowSeconds" name="loginRateLimitWindowSeconds" type="number" min="0" required value="{{formLoginRateLimitWindowSeconds}}"/>
+    </label>
+    <label for="emailVerificationTtlHours">{{t.admin.settings.security.emailVerificationTtlHours}}
+      <input id="emailVerificationTtlHours" name="emailVerificationTtlHours" type="number" min="1" required value="{{formEmailVerificationTtlHours}}"/>
+    </label>
+    <label for="defaultUserMaxStorageBytes">{{t.admin.settings.security.defaultUserMaxStorageBytes}}
+      <input id="defaultUserMaxStorageBytes" name="defaultUserMaxStorageBytes" type="number" min="0" required value="{{formDefaultUserMaxStorageBytes}}"/>
+    </label>
+    <label for="publicRegistrationEnabled">
+      <input type="checkbox" id="publicRegistrationEnabled" name="publicRegistrationEnabled" value="true"{{#formPublicRegistrationEnabled}} checked{{/formPublicRegistrationEnabled}}{{^mailEnabled}} disabled{{/mailEnabled}}/>
+      {{t.admin.settings.security.publicRegistrationEnabled}}
+    </label>
+    {{^mailEnabled}}
+    <p class="hint">{{t.admin.settings.security.publicRegistrationNeedsMail}}</p>
+    {{/mailEnabled}}
+    <p class="hint">{{t.admin.settings.security.keysHint}}</p>
+    <div class="page-actions">
+      <button type="submit">{{t.admin.settings.save}}</button>
+    </div>
+  </form>
+</article>

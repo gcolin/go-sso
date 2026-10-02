@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="{{lang}}">
+{{> head}}
+<body{{#authPage}} class="auth-page"{{/authPage}}>
+  {{> menubar}}
+  <main class="container">
+    {{#authPage}}
+      <article class="auth-card">
+        {{{content}}}
+      </article>
+    {{/authPage}}
+    {{^authPage}}
+      {{{content}}}
+    {{/authPage}}
+  </main>
+  {{> footer}}
+  <script src="{{basePath}}/static/js/ui.js" defer></script>
+</body>
+</html>

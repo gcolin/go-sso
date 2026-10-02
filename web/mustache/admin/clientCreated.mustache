@@ -1,0 +1,38 @@
+<header class="admin-page-header">
+  <h1>{{t.admin.clientCreated.heading}}</h1>
+  <p class="hint">{{t.admin.clientCreated.success}}</p>
+</header>
+{{> admin/settingsNav}}
+
+<article class="admin-table-panel">
+  <dl class="detail-list">
+    <dt>{{t.admin.clientCreated.clientId}}</dt>
+    <dd><code>{{client.clientId}}</code></dd>
+    {{#client.displayName}}
+      <dt>{{t.admin.clients.displayName}}</dt>
+      <dd>{{client.displayName}}</dd>
+    {{/client.displayName}}
+    <dt>{{t.admin.clientCreated.redirectUri}}</dt>
+    <dd>{{client.redirectUri}}</dd>
+    <dt>{{t.admin.clientCreated.type}}</dt>
+    <dd>
+      {{#clientConfidential}}
+        <span class="badge">{{t.admin.clients.confidential}}</span>
+      {{/clientConfidential}}
+      {{^clientConfidential}}
+        <span class="badge badge-muted">{{t.admin.clients.public}}</span>
+      {{/clientConfidential}}
+    </dd>
+    {{#client.clientSecret}}
+      <dt>{{t.admin.clientCreated.secret}}</dt>
+      <dd>
+        <code class="secret">{{client.clientSecret}}</code>
+        <p class="warning">{{t.admin.clientCreated.secretWarning}}</p>
+      </dd>
+    {{/client.clientSecret}}
+  </dl>
+  <div class="page-actions">
+    <a role="button" href="{{basePath}}/admin/clients">{{t.admin.clientCreated.backList}}</a>
+    <a role="button" class="secondary" href="{{basePath}}/admin/clients/new">{{t.admin.clientCreated.createAnother}}</a>
+  </div>
+</article>

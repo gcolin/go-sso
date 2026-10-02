@@ -1,0 +1,18 @@
+<h1>{{t.consent.heading}}</h1>
+<p class="lead">{{#m}}consent.request|{{clientDisplayName}}|{{user.email}}{{/m}}</p>
+{{#hasScopeLabels}}
+  <p class="hint">{{t.consent.permissionsIntro}}</p>
+  <ul class="consent-scopes">
+    {{#scopeLabels}}
+      <li>{{.}}</li>
+    {{/scopeLabels}}
+  </ul>
+{{/hasScopeLabels}}
+<form method="post" action="{{basePath}}/oauth/authorize/decision">
+  {{> csrfField}}
+  <input type="hidden" name="request_id" value="{{requestId}}"/>
+  <div class="page-actions">
+    <button type="submit" name="decision" value="allow">{{t.consent.allow}}</button>
+    <button type="submit" name="decision" value="deny" class="secondary">{{t.consent.deny}}</button>
+  </div>
+</form>

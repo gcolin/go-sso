@@ -1,0 +1,137 @@
+<header class="admin-page-header">
+  <h1>{{t.admin.settings.federation.heading}}</h1>
+  <p class="hint">{{t.admin.settings.federation.help}}</p>
+</header>
+{{> admin/settingsNav}}
+{{> alerts}}
+
+<article class="admin-table-panel">
+  <form method="post" action="{{basePath}}/admin/settings/federation">
+    {{> csrfField}}
+    <label for="autoProvision">
+      <input type="checkbox" id="autoProvision" name="autoProvision" value="true"{{#formAutoProvision}} checked{{/formAutoProvision}}/>
+      {{t.admin.settings.federation.autoProvision}}
+    </label>
+    <fieldset>
+      <legend>{{t.admin.settings.federation.defaultUserType}}</legend>
+      <label for="typeUser">
+        <input type="radio" id="typeUser" name="defaultUserType" value="user"{{#typeUserSelected}} checked{{/typeUserSelected}}/>
+        {{t.admin.users.typeUser}}
+      </label>
+      <label for="typeAdmin">
+        <input type="radio" id="typeAdmin" name="defaultUserType" value="admin"{{#typeAdminSelected}} checked{{/typeAdminSelected}}/>
+        {{t.admin.users.typeAdmin}}
+      </label>
+    </fieldset>
+    <div class="page-actions">
+      <button type="submit">{{t.admin.settings.save}}</button>
+    </div>
+  </form>
+</article>
+
+<article class="admin-table-panel">
+  <header class="admin-page-header">
+    <h2>{{t.admin.settings.federation.providersHeading}}</h2>
+    <p class="hint">{{t.admin.settings.federation.providersHelp}}</p>
+  </header>
+  {{#hasProviders}}
+    <div class="admin-table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>{{t.admin.settings.federation.providerId}}</th>
+            <th>{{t.admin.settings.federation.displayName}}</th>
+            <th>{{t.admin.settings.federation.enabled}}</th>
+            <th>{{t.admin.settings.federation.clientId}}</th>
+            <th>{{t.admin.users.actions}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#providers}}
+            <tr>
+              <td><code>{{id}}</code></td>
+              <td>{{displayName}}</td>
+              <td>
+                {{#enabled}}
+                  <span class="badge">{{t.admin.settings.federation.enabledOn}}</span>
+                {{/enabled}}
+                {{^enabled}}
+                  <span class="badge badge-muted">{{t.admin.settings.federation.enabledOff}}</span>
+                {{/enabled}}
+              </td>
+              <td><code>{{clientId}}</code></td>
+              <td class="table-actions">
+                <a role="button" class="outline" href="{{basePath}}/admin/settings/federation/providers/edit?id={{idEncoded}}">{{t.admin.settings.federation.edit}}</a>
+                <form method="post" action="{{basePath}}/admin/settings/federation/providers/delete"
+                      data-confirm="{{confirmDelete}}">
+                  {{> csrfField}}
+                  <input type="hidden" name="id" value="{{id}}"/>
+                  <button type="submit" class="outline contrast">{{t.admin.settings.federation.delete}}</button>
+                </form>
+              </td>
+            </tr>
+          {{/providers}}
+        </tbody>
+      </table>
+    </div>
+  {{/hasProviders}}
+  {{^hasProviders}}
+    <p class="hint">{{t.admin.settings.federation.providersEmpty}}</p>
+  {{/hasProviders}}
+</article>
+
+<article class="admin-table-panel">
+  <header class="admin-page-header">
+    <h2>{{t.admin.settings.federation.addProvider}}</h2>
+  </header>
+  <form method="post" action="{{basePath}}/admin/settings/federation/providers">
+    {{> csrfField}}
+    <label for="id">{{t.admin.settings.federation.providerId}}
+      <input id="id" name="id" type="text" required placeholder="google"/>
+    </label>
+    <label for="enabled">
+      <input type="checkbox" id="enabled" name="enabled" value="true" checked/>
+      {{t.admin.settings.federation.enabled}}
+    </label>
+    <label for="displayName">{{t.admin.settings.federation.displayName}}
+      <input id="displayName" name="displayName" type="text" placeholder="Google"/>
+    </label>
+    <label for="logo">{{t.admin.settings.federation.logo}}
+      <input id="logo" name="logo" type="text" placeholder="bi-google"/>
+      <small class="hint">{{t.admin.settings.federation.logoHelp}}</small>
+    </label>
+    <label for="clientId">{{t.admin.settings.federation.clientId}}
+      <input id="clientId" name="clientId" type="text"/>
+    </label>
+    <label for="clientSecret">{{t.admin.settings.federation.clientSecret}}
+      <input id="clientSecret" name="clientSecret" type="password" autocomplete="new-password"/>
+    </label>
+    <label for="authorizationUrl">{{t.admin.settings.federation.authorizationUrl}}
+      <input id="authorizationUrl" name="authorizationUrl" type="url"/>
+    </label>
+    <label for="tokenUrl">{{t.admin.settings.federation.tokenUrl}}
+      <input id="tokenUrl" name="tokenUrl" type="url"/>
+    </label>
+    <label for="userInfoUrl">{{t.admin.settings.federation.userInfoUrl}}
+      <input id="userInfoUrl" name="userInfoUrl" type="url"/>
+    </label>
+    <label for="scopes">{{t.admin.settings.federation.scopes}}
+      <input id="scopes" name="scopes" type="text" placeholder="openid email profile"/>
+    </label>
+    <label for="emailClaim">{{t.admin.settings.federation.emailClaim}}
+      <input id="emailClaim" name="emailClaim" type="text" placeholder="email"/>
+    </label>
+    <label for="nameClaim">{{t.admin.settings.federation.nameClaim}}
+      <input id="nameClaim" name="nameClaim" type="text" placeholder="name"/>
+    </label>
+    <label for="subjectClaim">{{t.admin.settings.federation.subjectClaim}}
+      <input id="subjectClaim" name="subjectClaim" type="text" placeholder="sub"/>
+    </label>
+    <label for="redirectUri">{{t.admin.settings.federation.redirectUri}}
+      <input id="redirectUri" name="redirectUri" type="url" placeholder="optional override"/>
+    </label>
+    <div class="page-actions">
+      <button type="submit">{{t.admin.settings.federation.createProvider}}</button>
+    </div>
+  </form>
+</article>

@@ -1,0 +1,69 @@
+<header class="admin-page-header">
+  <h1>{{headerTitle}}</h1>
+  <p class="hint">{{headerHelp}}</p>
+</header>
+{{> alerts}}
+
+<article class="admin-table-panel">
+  <form method="post" action="{{basePath}}{{formActionPath}}">
+    {{> csrfField}}
+    {{#editing}}
+      <input type="hidden" name="userId" value="{{editUserId}}"/>
+    {{/editing}}
+    <label for="email">{{t.admin.userForm.email}}
+      <input id="email" name="email" type="email" required
+             value="{{formEmailValue}}" placeholder="{{t.admin.userForm.emailPlaceholder}}"/>
+    </label>
+    <label for="name">{{t.admin.userForm.name}}
+      <input id="name" name="name" type="text"
+             value="{{formNameValue}}" placeholder="{{t.admin.userForm.namePlaceholder}}"/>
+    </label>
+    <label for="type">{{t.admin.userForm.type}}
+      <select id="type" name="type" required>
+        <option value="user"{{#typeUserSelected}} selected{{/typeUserSelected}}>{{t.admin.userForm.typeUser}}</option>
+        <option value="admin"{{#typeAdminSelected}} selected{{/typeAdminSelected}}>{{t.admin.userForm.typeAdmin}}</option>
+      </select>
+    </label>
+    <label for="password">{{passwordLabel}}
+      <input id="password" name="password" type="password"
+             {{#passwordRequired}}required{{/passwordRequired}}
+             autocomplete="new-password"
+             placeholder="{{passwordPlaceholder}}"/>
+    </label>
+    {{#showEmailVerified}}
+      <label for="emailVerified">
+        <input type="checkbox" id="emailVerified" name="emailVerified" value="true"{{#emailVerifiedChecked}} checked{{/emailVerifiedChecked}}/>
+        {{t.admin.userForm.emailVerified}}
+      </label>
+      <p class="hint">{{t.admin.userForm.emailVerifiedHint}}</p>
+    {{/showEmailVerified}}
+    <div class="page-actions">
+      <button type="submit">{{submitLabel}}</button>
+      <a role="button" class="secondary" href="{{basePath}}/admin/users">{{t.admin.userForm.cancel}}</a>
+    </div>
+  </form>
+</article>
+
+{{#editing}}
+  <article class="admin-table-panel">
+    <h2>{{t.profile.2fa}}</h2>
+    <p class="hint">
+      {{t.profile.2faStatus}}
+      {{#totpEnabled}}
+        <strong>{{t.profile.2faEnabled}}</strong>
+      {{/totpEnabled}}
+      {{^totpEnabled}}
+        {{t.profile.2faDisabled}}
+      {{/totpEnabled}}
+    </p>
+    {{#totpEnabled}}
+      <form method="post" action="{{basePath}}/admin/users/disable-2fa"
+            data-confirm="{{confirmRemove2fa}}">
+        {{> csrfField}}
+        <input type="hidden" name="userId" value="{{editUserId}}"/>
+        <input type="hidden" name="returnTo" value="/admin/users/edit?userId={{editUserIdEncoded}}"/>
+        <button type="submit" class="outline contrast">{{t.admin.userForm.remove2fa}}</button>
+      </form>
+    {{/totpEnabled}}
+  </article>
+{{/editing}}

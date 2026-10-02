@@ -1,0 +1,358 @@
+/* SSO layout complements — structure only; colors come from Pico defaults or a theme CSS */
+
+:root {
+  --sso-panel-bg: var(--pico-card-background-color, #fff);
+  --sso-panel-border: var(--pico-muted-border-color, #e0e0e0);
+  --sso-ink: var(--pico-color, #373c44);
+  --sso-muted: var(--pico-muted-color, #646b79);
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body > main.container {
+  flex: 1 0 auto;
+  padding-top: 1.25rem;
+  padding-bottom: 2rem;
+}
+
+.auth-page main.container {
+  max-width: 28rem;
+  margin-inline: auto;
+  padding-top: 2rem;
+}
+
+.auth-card,
+.panel,
+.admin-page-header,
+.admin-table-panel {
+  background: var(--sso-panel-bg);
+  border: 1px solid var(--sso-panel-border);
+  border-radius: var(--pico-border-radius);
+  padding: 1.25rem;
+}
+
+.auth-card {
+  padding: 1.75rem;
+}
+
+.navbar {
+  border-radius: 0;
+  margin-bottom: 0;
+  padding: 0 16px;
+}
+
+.navbar a[aria-current="page"] {
+  text-decoration: underline;
+}
+
+.navbar .brand {
+  text-decoration: none;
+}
+
+.navbar > ul:first-child {
+  margin-inline-end: 2rem;
+}
+
+.logout-form {
+  margin: 0;
+  display: contents;
+}
+
+.navbar button.nav-logout {
+  all: unset;
+  display: inline;
+  cursor: pointer;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  font: inherit;
+  line-height: inherit;
+  text-decoration: none;
+}
+
+.navbar button.nav-logout:hover,
+.navbar button.nav-logout:focus,
+.navbar button.nav-logout:active {
+  text-decoration: underline;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none;
+}
+
+.table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.table-actions form {
+  display: contents;
+}
+
+.table-actions a[role="button"],
+.table-actions button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  margin: 0;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  min-height: 2rem;
+  border-width: 1px;
+}
+
+.admin-table-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.admin-table-scroll table {
+  width: max-content;
+  min-width: 100%;
+}
+
+.hint {
+  color: var(--sso-muted);
+}
+
+.center {
+  text-align: center;
+}
+
+.lead {
+  font-size: 1.15rem;
+}
+
+.consent-scopes {
+  margin: 0 0 1.25rem;
+  padding-left: 1.25rem;
+  color: var(--sso-muted);
+}
+
+.consent-scopes li {
+  margin: 0.35rem 0;
+}
+
+.after-form {
+  margin-top: 1rem;
+  margin-bottom: 0;
+}
+
+.stack {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.stack [role="button"] {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.idp-logo {
+  font-size: 1.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.page-actions > * {
+  margin-bottom: 0;
+  width: auto;
+}
+
+.admin-page-header {
+  margin-bottom: 1rem;
+}
+
+.admin-page-header h1,
+.admin-table-panel h2 {
+  margin-bottom: 0.25rem;
+}
+
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.admin-settings-nav {
+  margin-bottom: 1rem;
+}
+
+.admin-settings-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-settings-nav a[aria-current="page"] {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.admin-toolbar [role="button"] {
+  margin: 0;
+  width: auto;
+}
+
+.admin-table-panel + .admin-table-panel {
+  margin-top: 1rem;
+}
+
+.breadcrumb {
+  color: var(--sso-muted);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
+}
+
+.breadcrumb a {
+  color: var(--pico-primary);
+}
+
+.breadcrumb span[aria-hidden="true"] {
+  margin: 0 0.35rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--pico-border-radius);
+  background: var(--pico-primary-background);
+  color: var(--pico-primary-inverse);
+  font-size: 0.8rem;
+}
+
+.badge-muted {
+  background: #6c757d;
+}
+
+.badge-ok {
+  background: var(--pico-ins-color, #2e7d32);
+}
+
+.badge-warn {
+  background: var(--pico-mark-background-color, #fff3cd);
+  color: #1a1a1a;
+}
+
+.alert {
+  margin: 0.75rem 0;
+  padding: 0.85rem 1rem;
+  border-radius: var(--pico-border-radius);
+  border: 1px solid var(--pico-muted-border-color);
+}
+
+.alert-success {
+  border-color: var(--pico-ins-color, #2e7d32);
+  color: var(--pico-ins-color, #2e7d32);
+}
+
+.alert-error {
+  border-color: var(--pico-del-color, #c62828);
+  color: var(--pico-del-color, #c62828);
+}
+
+.warning {
+  color: var(--pico-mark-color, #856404);
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+.totp-qr {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  width: fit-content;
+  background: #fff;
+  border-radius: 0.5rem;
+}
+
+.totp-qr svg,
+.totp-qr canvas {
+  display: block;
+  width: 220px;
+  height: 220px;
+}
+
+code.secret {
+  display: block;
+  word-break: break-all;
+  margin-top: 0.25rem;
+}
+
+.detail-list {
+  display: grid;
+  grid-template-columns: minmax(8rem, 12rem) 1fr;
+  gap: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.detail-list dt {
+  color: var(--sso-muted);
+  margin: 0;
+}
+
+.detail-list dd {
+  margin: 0;
+}
+
+.site-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  padding-bottom: 1.25rem;
+  border-top: 1px solid var(--sso-panel-border);
+  color: var(--sso-muted);
+  font-size: 0.875rem;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .navbar {
+    flex-wrap: wrap;
+  }
+
+  .detail-list {
+    grid-template-columns: 1fr;
+  }
+
+  .page-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-actions > * {
+    width: 100%;
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8080,
+    "publicBaseUrl": "http://localhost:8080/sso",
+    "title": "Datanode SSO",
+    "defaultLocale": "fr",
+    "defaultTheme": "base",
+    "themesDir": "themes"
+  },
+  "security": {
+    "sessionCookieName": "datanode_sso_session",
+    "sessionCookieSecure": false,
+    "sessionTtlMinutes": 720,
+    "ssoPrivateKeyBase64": "RUN: datanode-sso init-config  (do not commit real keys)",
+    "ssoPublicKeyBase64": "RUN: datanode-sso init-config  (do not commit real keys)",
+    "loginRateLimitMaxAttempts": 10,
+    "loginRateLimitWindowSeconds": 300,
+    "emailVerificationTtlHours": 48,
+    "publicRegistrationEnabled": false
+  },
+  "oauth": {
+    "authorizationCodeTtlSeconds": 300,
+    "accessTokenTtlSeconds": 3600,
+    "clients": [
+      {
+        "clientId": "datanode-example",
+        "redirectUri": "http://localhost:9090/callback",
+        "clientSecret": "replace-me"
+      }
+    ]
+  },
+  "federation": {
+    "autoProvision": false,
+    "defaultUserType": "user",
+    "identityProviders": []
+  },
+  "mail": {
+    "enabled": false,
+    "smtpHost": "localhost",
+    "smtpPort": 587,
+    "fromName": "Datanode SSO",
+    "startTls": true
+  },
+  "users": [
+    {
+      "id": "admin-1",
+      "email": "admin@example.com",
+      "passwordHash": "RUN: datanode-sso hash-password admin123",
+      "name": "Admin",
+      "type": "admin"
+    }
+  ]
+}
