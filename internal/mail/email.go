@@ -128,7 +128,7 @@ func (c *smtpClient) connect() error {
 	if port <= 0 {
 		port = 587
 	}
-	addr := fmt.Sprintf("%s:%d", host, port)
+	addr := net.JoinHostPort(host, fmt.Sprintf("%d", port))
 	conn, err := net.DialTimeout("tcp", addr, defaultTimeout)
 	if err != nil {
 		return &EmailException{Msg: "SMTP I/O failure: " + err.Error()}
