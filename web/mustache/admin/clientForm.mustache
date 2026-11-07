@@ -23,10 +23,16 @@
              value="{{formDisplayNameValue}}" placeholder="{{t.admin.clientForm.displayNamePlaceholder}}"/>
       <small class="hint">{{t.admin.clientForm.displayNameHelp}}</small>
     </label>
-    <label for="redirectUri">{{t.admin.clientForm.redirectUri}}
-      <input id="redirectUri" name="redirectUri" type="url" required
-             value="{{formRedirectUriValue}}" placeholder="{{t.admin.clientForm.redirectUriPlaceholder}}"/>
+    <label for="redirectUris">{{t.admin.clientForm.redirectUris}}
+      <textarea id="redirectUris" name="redirectUris" rows="4"
+                placeholder="{{t.admin.clientForm.redirectUrisPlaceholder}}">{{formRedirectUriValue}}</textarea>
+      <small class="hint">{{t.admin.clientForm.redirectUrisHelp}}</small>
     </label>
+    <label for="allowAnyRedirectUri">
+      <input type="checkbox" id="allowAnyRedirectUri" name="allowAnyRedirectUri" value="true"{{#formAllowAnyRedirectUri}} checked{{/formAllowAnyRedirectUri}}/>
+      {{t.admin.clientForm.allowAnyRedirectUri}}
+    </label>
+    <small class="hint">{{t.admin.clientForm.allowAnyRedirectUriHelp}}</small>
     <label for="theme">{{t.admin.clientForm.theme}}
       <select id="theme" name="theme">
         {{#themeOptions}}

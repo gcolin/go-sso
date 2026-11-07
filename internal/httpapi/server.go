@@ -346,21 +346,48 @@ func (s *Server) adminDisableTotp(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"status": "ok", "message": "totp disabled"})
 }
 
+func clientJSON(c *model.OAuthClient) map[string]any {
+	uris := c.AllowedRedirectURIs()
+	body := map[string]any{
+		"clientId":            c.ClientID,
+		"displayName":         c.DisplayName,
+		"redirectUri":         c.PrimaryRedirectURI(),
+		"redirectUris":        uris,
+		"allowAnyRedirectUri": c.AllowAnyRedirectURI,
+		"theme":               c.Theme,
+		"confidential":        c.IsConfidential(),
+	}
+	if c.ClientSecret != "" {
+		body["clientSecret"] = c.ClientSecret
+	}
+	return body
+}
+
+func mergeRedirectURIs(single string, multi []string) []string {
+	var out []string
+	if u := strings.TrimSpace(single); u != "" {
+		out = append(out, u)
+	}
+	for _, u := range multi {
+		if t := strings.TrimSpace(u); t != "" {
+			out = append(out, t)
+		}
+	}
+	return out
+}
+
 func (s *Server) adminListClients(w http.ResponseWriter, r *http.Request) {
 	if s.requireAdmin(w, r) == nil {
 		return
 	}
 	clients := s.rt.Clients.ListAll()
 	out := make([]map[string]any, 0, len(clients))
-	for _, c := range clients {
-		out = append(out, map[string]any{
-			"clientId":     c.ClientID,
-			"displayName":  c.DisplayName,
-			"label":        c.DisplayLabel(),
-			"redirectUri":  c.RedirectURI,
-			"theme":        c.Theme,
-			"confidential": c.IsConfidential(),
-		})
+	for i := range clients {
+		c := clients[i]
+		row := clientJSON(&c)
+		row["label"] = c.DisplayLabel()
+		delete(row, "clientSecret")
+		out = append(out, row)
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"clients": out})
 }
@@ -370,11 +397,13 @@ func (s *Server) adminCreateClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var req struct {
-		ClientID     string `json:"clientId"`
-		DisplayName  string `json:"displayName"`
-		RedirectURI  string `json:"redirectUri"`
-		Theme        string `json:"theme"`
-		Confidential bool   `json:"confidential"`
+		ClientID            string   `json:"clientId"`
+		DisplayName         string   `json:"displayName"`
+		RedirectURI         string   `json:"redirectUri"`
+		RedirectURIs        []string `json:"redirectUris"`
+		AllowAnyRedirectURI bool     `json:"allowAnyRedirectUri"`
+		Theme               string   `json:"theme"`
+		Confidential        bool     `json:"confidential"`
 	}
 	if err := readJSON(r, &req); err != nil {
 		writeJSON(w, http.StatusBadRequest, msg("error", "invalid json"))
@@ -384,22 +413,13 @@ func (s *Server) adminCreateClient(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, msg("error", err.Error()))
 		return
 	}
-	c, err := s.rt.Clients.Create(req.ClientID, req.DisplayName, req.RedirectURI, req.Theme, req.Confidential)
+	uris := mergeRedirectURIs(req.RedirectURI, req.RedirectURIs)
+	c, err := s.rt.Clients.Create(req.ClientID, req.DisplayName, uris, req.Theme, req.Confidential, req.AllowAnyRedirectURI)
 	if err != nil {
 		writeDomainErr(w, err)
 		return
 	}
-	body := map[string]any{
-		"clientId":     c.ClientID,
-		"displayName":  c.DisplayName,
-		"redirectUri":  c.RedirectURI,
-		"theme":        c.Theme,
-		"confidential": c.IsConfidential(),
-	}
-	if c.ClientSecret != "" {
-		body["clientSecret"] = c.ClientSecret
-	}
-	writeJSON(w, http.StatusCreated, map[string]any{"status": "ok", "client": body})
+	writeJSON(w, http.StatusCreated, map[string]any{"status": "ok", "client": clientJSON(c)})
 }
 
 func (s *Server) adminUpdateClient(w http.ResponseWriter, r *http.Request) {
@@ -407,9 +427,11 @@ func (s *Server) adminUpdateClient(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var req struct {
-		DisplayName string `json:"displayName"`
-		RedirectURI string `json:"redirectUri"`
-		Theme       string `json:"theme"`
+		DisplayName         string   `json:"displayName"`
+		RedirectURI         string   `json:"redirectUri"`
+		RedirectURIs        []string `json:"redirectUris"`
+		AllowAnyRedirectURI bool     `json:"allowAnyRedirectUri"`
+		Theme               string   `json:"theme"`
 	}
 	if err := readJSON(r, &req); err != nil {
 		writeJSON(w, http.StatusBadRequest, msg("error", "invalid json"))
@@ -419,20 +441,17 @@ func (s *Server) adminUpdateClient(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadRequest, msg("error", err.Error()))
 		return
 	}
-	c, err := s.rt.Clients.Update(r.PathValue("clientId"), req.DisplayName, req.RedirectURI, req.Theme)
+	uris := mergeRedirectURIs(req.RedirectURI, req.RedirectURIs)
+	c, err := s.rt.Clients.Update(r.PathValue("clientId"), req.DisplayName, uris, req.Theme, req.AllowAnyRedirectURI)
 	if err != nil {
 		writeDomainErr(w, err)
 		return
 	}
+	body := clientJSON(c)
+	delete(body, "clientSecret")
 	writeJSON(w, http.StatusOK, map[string]any{
 		"status": "ok",
-		"client": map[string]any{
-			"clientId":     c.ClientID,
-			"displayName":  c.DisplayName,
-			"redirectUri":  c.RedirectURI,
-			"theme":        c.Theme,
-			"confidential": c.IsConfidential(),
-		},
+		"client": body,
 	})
 }
 

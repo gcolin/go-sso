@@ -295,6 +295,96 @@ func TestAuthorizeDecisionRequiresSessionBinding(t *testing.T) {
 	}
 }
 
+func TestAuthorizeAcceptsSecondaryRedirectURI(t *testing.T) {
+	rt, h := testsupport.NewRuntime(t, ssoBase)
+	second := "http://localhost:9090/alt-callback"
+	if _, err := rt.Clients.Update(testsupport.TestClientID, "Test app", []string{testsupport.TestRedirect, second}, "", false); err != nil {
+		t.Fatal(err)
+	}
+	cookie := testsupport.LoginCookie(t, h, "/sso", testsupport.UserEmail, testsupport.Password)
+	// Pre-consent so authorize redirects with code immediately.
+	rt.Consent.Remember("user-1", testsupport.TestClientID, "openid")
+
+	authorizeURL := "/sso/oauth/authorize?" + url.Values{
+		"response_type": {"code"},
+		"client_id":     {testsupport.TestClientID},
+		"redirect_uri":  {second},
+		"scope":         {"openid"},
+		"state":         {"s1"},
+	}.Encode()
+	rec := get(t, h, authorizeURL, cookie)
+	if rec.Code != http.StatusFound {
+		t.Fatalf("status=%d body=%s", rec.Code, truncate(rec.Body.String(), 200))
+	}
+	if loc := rec.Header().Get("Location"); !strings.HasPrefix(loc, second) {
+		t.Fatalf("Location=%q", loc)
+	}
+}
+
+func TestAuthorizeRejectsUnregisteredRedirectURI(t *testing.T) {
+	h := testsupport.NewHandler(t, ssoBase)
+	cookie := testsupport.LoginCookie(t, h, "/sso", testsupport.UserEmail, testsupport.Password)
+	authorizeURL := "/sso/oauth/authorize?" + url.Values{
+		"response_type": {"code"},
+		"client_id":     {testsupport.TestClientID},
+		"redirect_uri":  {"http://evil.example/cb"},
+		"scope":         {"openid"},
+	}.Encode()
+	rec := get(t, h, authorizeURL, cookie)
+	if rec.Code != http.StatusBadRequest {
+		t.Fatalf("status=%d want 400 body=%s", rec.Code, truncate(rec.Body.String(), 200))
+	}
+}
+
+func TestAuthorizeAllowAnyRedirectURI(t *testing.T) {
+	rt, h := testsupport.NewRuntime(t, ssoBase)
+	if _, err := rt.Clients.Update(testsupport.TestClientID, "Test app", nil, "", true); err != nil {
+		t.Fatal(err)
+	}
+	cookie := testsupport.LoginCookie(t, h, "/sso", testsupport.UserEmail, testsupport.Password)
+	rt.Consent.Remember("user-1", testsupport.TestClientID, "openid")
+
+	arbitrary := "http://dev.local:3999/oauth/callback"
+	authorizeURL := "/sso/oauth/authorize?" + url.Values{
+		"response_type": {"code"},
+		"client_id":     {testsupport.TestClientID},
+		"redirect_uri":  {arbitrary},
+		"scope":         {"openid"},
+		"state":         {"any"},
+	}.Encode()
+	rec := get(t, h, authorizeURL, cookie)
+	if rec.Code != http.StatusFound {
+		t.Fatalf("status=%d body=%s", rec.Code, truncate(rec.Body.String(), 200))
+	}
+	loc := rec.Header().Get("Location")
+	if !strings.HasPrefix(loc, arbitrary) {
+		t.Fatalf("Location=%q", loc)
+	}
+	u, err := url.Parse(loc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	code := u.Query().Get("code")
+	if code == "" {
+		t.Fatalf("missing code in %q", loc)
+	}
+
+	// Token exchange must still use the same redirect_uri as the authorization code.
+	mismatch := url.Values{
+		"grant_type":   {"authorization_code"},
+		"code":         {code},
+		"redirect_uri": {"http://other.example/cb"},
+		"client_id":    {testsupport.TestClientID},
+	}.Encode()
+	tokReq := httptest.NewRequest(http.MethodPost, "/sso/oauth/token", strings.NewReader(mismatch))
+	tokReq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	tokRec := httptest.NewRecorder()
+	h.ServeHTTP(tokRec, tokReq)
+	if tokRec.Code == http.StatusOK {
+		t.Fatalf("expected token reject on redirect_uri mismatch, body=%s", tokRec.Body.String())
+	}
+}
+
 func randomCodeVerifier(t *testing.T) string {
 	t.Helper()
 	b := make([]byte, 32)

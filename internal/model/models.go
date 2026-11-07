@@ -74,15 +74,71 @@ func (u *User) EffectiveMaxStorageBytes(defaultBytes int64) int64 {
 
 // OAuthClient is a registered OAuth 2.0 client.
 type OAuthClient struct {
-	ClientID     string `json:"clientId"`
-	DisplayName  string `json:"displayName,omitempty"`
-	RedirectURI  string `json:"redirectUri"`
-	ClientSecret string `json:"clientSecret,omitempty"`
-	Theme        string `json:"theme,omitempty"`
+	ClientID            string   `json:"clientId"`
+	DisplayName         string   `json:"displayName,omitempty"`
+	RedirectURI         string   `json:"redirectUri,omitempty"` // legacy / first URI
+	RedirectURIs        []string `json:"redirectUris,omitempty"`
+	AllowAnyRedirectURI bool     `json:"allowAnyRedirectUri,omitempty"`
+	ClientSecret        string   `json:"clientSecret,omitempty"`
+	Theme               string   `json:"theme,omitempty"`
 }
 
 func (c *OAuthClient) IsConfidential() bool {
 	return c != nil && c.ClientSecret != ""
+}
+
+// AllowedRedirectURIs merges redirectUri + redirectUris (trim, dedupe, drop empty).
+func (c *OAuthClient) AllowedRedirectURIs() []string {
+	if c == nil {
+		return nil
+	}
+	seen := map[string]struct{}{}
+	var out []string
+	add := func(u string) {
+		u = strings.TrimSpace(u)
+		if u == "" {
+			return
+		}
+		if _, ok := seen[u]; ok {
+			return
+		}
+		seen[u] = struct{}{}
+		out = append(out, u)
+	}
+	add(c.RedirectURI)
+	for _, u := range c.RedirectURIs {
+		add(u)
+	}
+	return out
+}
+
+// AllowsRedirectURI reports whether uri is permitted for this client.
+func (c *OAuthClient) AllowsRedirectURI(uri string) bool {
+	if c == nil {
+		return false
+	}
+	uri = strings.TrimSpace(uri)
+	if uri == "" {
+		return false
+	}
+	if c.AllowAnyRedirectURI {
+		return true
+	}
+	for _, allowed := range c.AllowedRedirectURIs() {
+		if allowed == uri {
+			return true
+		}
+	}
+	return false
+}
+
+// PrimaryRedirectURI returns the first registered redirect URI, if any.
+func (c *OAuthClient) PrimaryRedirectURI() string {
+	uris := c.AllowedRedirectURIs()
+	if len(uris) == 0 {
+		return ""
+	}
+	return uris[0]
 }
 
 // DisplayLabel is the user-facing name (displayName, else a softened clientId).

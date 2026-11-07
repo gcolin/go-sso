@@ -66,6 +66,25 @@ func (s *Server) adminClientFormPage(w http.ResponseWriter, r *http.Request) {
 	s.render(w, http.StatusOK, "admin/clientForm", model)
 }
 
+func parseRedirectURIsText(raw string) []string {
+	var out []string
+	for _, line := range strings.Split(raw, "\n") {
+		line = strings.TrimSpace(strings.TrimSuffix(line, "\r"))
+		if line == "" {
+			continue
+		}
+		out = append(out, line)
+	}
+	return out
+}
+
+func redirectURIsFormText(c *model.OAuthClient) string {
+	if c == nil {
+		return ""
+	}
+	return strings.Join(c.AllowedRedirectURIs(), "\n")
+}
+
 func (s *Server) adminClientCreatePage(w http.ResponseWriter, r *http.Request) {
 	admin := s.requireAdminHTML(w, r)
 	if admin == nil {
@@ -76,7 +95,12 @@ func (s *Server) adminClientCreatePage(w http.ResponseWriter, r *http.Request) {
 	}
 	clientID := r.Form.Get("clientId")
 	displayName := r.Form.Get("displayName")
-	redirectURI := r.Form.Get("redirectUri")
+	redirectText := r.Form.Get("redirectUris")
+	if redirectText == "" {
+		redirectText = r.Form.Get("redirectUri")
+	}
+	redirectURIs := parseRedirectURIsText(redirectText)
+	allowAny := r.Form.Get("allowAnyRedirectUri") == "true"
 	theme := strings.TrimSpace(r.Form.Get("theme"))
 	confidential := r.Form.Get("confidential") == "true"
 	if err := s.validateClientTheme(theme); err != nil {
@@ -85,20 +109,22 @@ func (s *Server) adminClientCreatePage(w http.ResponseWriter, r *http.Request) {
 		model["error"] = err.Error()
 		model["formClientId"] = clientID
 		model["formDisplayName"] = displayName
-		model["formRedirectUri"] = redirectURI
+		model["formRedirectUri"] = redirectText
+		model["formAllowAnyRedirectUri"] = allowAny
 		model["formConfidential"] = confidential
 		s.withThemeOptions(model, theme)
 		s.render(w, http.StatusBadRequest, "admin/clientForm", model)
 		return
 	}
-	client, err := s.rt.Clients.Create(clientID, displayName, redirectURI, theme, confidential)
+	client, err := s.rt.Clients.Create(clientID, displayName, redirectURIs, theme, confidential, allowAny)
 	if err != nil {
 		model := s.pageModel(r, "page.adminClientNew", admin)
 		s.withSettingsNav(model, "clients")
 		model["error"] = err.Error()
 		model["formClientId"] = clientID
 		model["formDisplayName"] = displayName
-		model["formRedirectUri"] = redirectURI
+		model["formRedirectUri"] = redirectText
+		model["formAllowAnyRedirectUri"] = allowAny
 		model["formConfidential"] = confidential
 		s.withThemeOptions(model, theme)
 		s.render(w, http.StatusBadRequest, "admin/clientForm", model)
@@ -126,7 +152,8 @@ func (s *Server) adminClientEditPage(w http.ResponseWriter, r *http.Request) {
 	model["editingClient"] = true
 	model["formClientId"] = client.ClientID
 	model["formDisplayName"] = client.DisplayName
-	model["formRedirectUri"] = client.RedirectURI
+	model["formRedirectUri"] = redirectURIsFormText(client)
+	model["formAllowAnyRedirectUri"] = client.AllowAnyRedirectURI
 	model["formConfidential"] = client.IsConfidential()
 	model["formAction"] = s.basePath(r) + "/admin/clients/" + url.PathEscape(client.ClientID)
 	s.withThemeOptions(model, client.Theme)
@@ -143,7 +170,12 @@ func (s *Server) adminClientUpdatePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	displayName := r.Form.Get("displayName")
-	redirectURI := r.Form.Get("redirectUri")
+	redirectText := r.Form.Get("redirectUris")
+	if redirectText == "" {
+		redirectText = r.Form.Get("redirectUri")
+	}
+	redirectURIs := parseRedirectURIsText(redirectText)
+	allowAny := r.Form.Get("allowAnyRedirectUri") == "true"
 	theme := strings.TrimSpace(r.Form.Get("theme"))
 	if err := s.validateClientTheme(theme); err != nil {
 		model := s.pageModel(r, "page.adminClientEdit", admin)
@@ -152,20 +184,22 @@ func (s *Server) adminClientUpdatePage(w http.ResponseWriter, r *http.Request) {
 		model["editingClient"] = true
 		model["formClientId"] = clientID
 		model["formDisplayName"] = displayName
-		model["formRedirectUri"] = redirectURI
+		model["formRedirectUri"] = redirectText
+		model["formAllowAnyRedirectUri"] = allowAny
 		model["formAction"] = s.basePath(r) + "/admin/clients/" + url.PathEscape(clientID)
 		s.withThemeOptions(model, theme)
 		s.render(w, http.StatusBadRequest, "admin/clientForm", model)
 		return
 	}
-	if _, err := s.rt.Clients.Update(clientID, displayName, redirectURI, theme); err != nil {
+	if _, err := s.rt.Clients.Update(clientID, displayName, redirectURIs, theme, allowAny); err != nil {
 		model := s.pageModel(r, "page.adminClientEdit", admin)
 		s.withSettingsNav(model, "clients")
 		model["error"] = err.Error()
 		model["editingClient"] = true
 		model["formClientId"] = clientID
 		model["formDisplayName"] = displayName
-		model["formRedirectUri"] = redirectURI
+		model["formRedirectUri"] = redirectText
+		model["formAllowAnyRedirectUri"] = allowAny
 		model["formAction"] = s.basePath(r) + "/admin/clients/" + url.PathEscape(clientID)
 		s.withThemeOptions(model, theme)
 		s.render(w, http.StatusBadRequest, "admin/clientForm", model)

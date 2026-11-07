@@ -43,15 +43,32 @@ func (r *OAuthClientRegistry) FindByID(clientID string) (*model.OAuthClient, boo
 	return nil, false
 }
 
-func (r *OAuthClientRegistry) Create(clientID, displayName, redirectURI, theme string, confidential bool) (*model.OAuthClient, error) {
+func normalizeRedirectURIs(uris []string) []string {
+	seen := map[string]struct{}{}
+	var out []string
+	for _, u := range uris {
+		u = strings.TrimSpace(u)
+		if u == "" {
+			continue
+		}
+		if _, ok := seen[u]; ok {
+			continue
+		}
+		seen[u] = struct{}{}
+		out = append(out, u)
+	}
+	return out
+}
+
+func (r *OAuthClientRegistry) Create(clientID, displayName string, redirectURIs []string, theme string, confidential, allowAny bool) (*model.OAuthClient, error) {
 	clientID = strings.TrimSpace(clientID)
 	displayName = strings.TrimSpace(displayName)
-	redirectURI = strings.TrimSpace(redirectURI)
 	theme = strings.TrimSpace(theme)
+	redirectURIs = normalizeRedirectURIs(redirectURIs)
 	if clientID == "" {
 		return nil, &ClientValidationError{Msg: "clientId is required"}
 	}
-	if redirectURI == "" {
+	if !allowAny && len(redirectURIs) == 0 {
 		return nil, &ClientValidationError{Msg: "redirectUri is required"}
 	}
 	r.mu.Lock()
@@ -67,12 +84,18 @@ func (r *OAuthClientRegistry) Create(clientID, displayName, redirectURI, theme s
 		_, _ = rand.Read(b)
 		secret = base64.RawURLEncoding.EncodeToString(b)
 	}
+	var primary string
+	if len(redirectURIs) > 0 {
+		primary = redirectURIs[0]
+	}
 	client := model.OAuthClient{
-		ClientID:     clientID,
-		DisplayName:  displayName,
-		RedirectURI:  redirectURI,
-		ClientSecret: secret,
-		Theme:        theme,
+		ClientID:            clientID,
+		DisplayName:         displayName,
+		RedirectURI:         primary,
+		RedirectURIs:        redirectURIs,
+		AllowAnyRedirectURI: allowAny,
+		ClientSecret:        secret,
+		Theme:               theme,
 	}
 	r.cfg.Oauth.Clients = append(r.cfg.Oauth.Clients, client)
 	if err := r.loader.Save(r.cfg); err != nil {
@@ -82,16 +105,16 @@ func (r *OAuthClientRegistry) Create(clientID, displayName, redirectURI, theme s
 	return &client, nil
 }
 
-// Update changes displayName, redirectUri, and theme for an existing client. clientId is immutable.
-func (r *OAuthClientRegistry) Update(clientID, displayName, redirectURI, theme string) (*model.OAuthClient, error) {
+// Update changes displayName, redirect URIs, allowAny, and theme for an existing client. clientId is immutable.
+func (r *OAuthClientRegistry) Update(clientID, displayName string, redirectURIs []string, theme string, allowAny bool) (*model.OAuthClient, error) {
 	clientID = strings.TrimSpace(clientID)
 	displayName = strings.TrimSpace(displayName)
-	redirectURI = strings.TrimSpace(redirectURI)
 	theme = strings.TrimSpace(theme)
+	redirectURIs = normalizeRedirectURIs(redirectURIs)
 	if clientID == "" {
 		return nil, &ClientValidationError{Msg: "clientId is required"}
 	}
-	if redirectURI == "" {
+	if !allowAny && len(redirectURIs) == 0 {
 		return nil, &ClientValidationError{Msg: "redirectUri is required"}
 	}
 	r.mu.Lock()
@@ -109,7 +132,13 @@ func (r *OAuthClientRegistry) Update(clientID, displayName, redirectURI, theme s
 	prev := r.cfg.Oauth.Clients[idx]
 	updated := prev
 	updated.DisplayName = displayName
-	updated.RedirectURI = redirectURI
+	var primary string
+	if len(redirectURIs) > 0 {
+		primary = redirectURIs[0]
+	}
+	updated.RedirectURI = primary
+	updated.RedirectURIs = redirectURIs
+	updated.AllowAnyRedirectURI = allowAny
 	updated.Theme = theme
 	r.cfg.Oauth.Clients[idx] = updated
 	if err := r.loader.Save(r.cfg); err != nil {

@@ -64,10 +64,11 @@ Authorization: Bearer <access_token>
 
 ## Registering a client
 
-Admin UI: **Clients** → create (`clientId`, `redirectUri`, optional secret & theme),  
+Admin UI: **Clients** → create (`clientId`, one or more `redirectUris`, optional secret & theme),  
 or edit `oauth.clients` in JSON and restart / save via admin.
 
-Only **one** `redirectUri` per client entry. For multiple environments, register multiple clients (`app-prod`, `app-dev`).
+- `redirectUris`: list of exact-match redirect URIs (legacy single `redirectUri` still accepted).
+- `allowAnyRedirectUri`: when true, skips redirect URI validation for that client (dev only; unsafe in production).
 
 ## Scopes & roles
 

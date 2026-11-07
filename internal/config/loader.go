@@ -121,8 +121,8 @@ func Validate(cfg *AppConfig) error {
 		if strings.TrimSpace(c.ClientID) == "" {
 			return fmt.Errorf("oauth.clients[].clientId is required")
 		}
-		if strings.TrimSpace(c.RedirectURI) == "" {
-			return fmt.Errorf("oauth.clients[].redirectUri is required")
+		if !c.AllowAnyRedirectURI && len(c.AllowedRedirectURIs()) == 0 {
+			return fmt.Errorf("oauth.clients[].redirectUri or redirectUris is required (unless allowAnyRedirectUri)")
 		}
 		if _, ok := seenClients[c.ClientID]; ok {
 			return fmt.Errorf("duplicate oauth clientId: %s", c.ClientID)

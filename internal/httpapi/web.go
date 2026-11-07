@@ -378,7 +378,10 @@ func (s *Server) allowedPostLogoutRedirect(target string) bool {
 	}
 	candidates := []string{s.rt.Config.Server.PublicBaseURL}
 	for _, c := range s.rt.Clients.ListAll() {
-		candidates = append(candidates, c.RedirectURI)
+		if c.AllowAnyRedirectURI {
+			return true
+		}
+		candidates = append(candidates, c.AllowedRedirectURIs()...)
 	}
 	for _, c := range candidates {
 		base, err := url.Parse(strings.TrimSpace(c))

@@ -52,7 +52,9 @@ Context path = URL path of `publicBaseUrl`. Empty path → routes at `/`.
 |-------|-------------|
 | `clientId` | Public client id |
 | `displayName` | Shown on consent |
-| `redirectUri` | Single exact redirect URI |
+| `redirectUri` | Legacy single exact redirect URI (merged into `redirectUris`) |
+| `redirectUris` | List of exact-match redirect URIs |
+| `allowAnyRedirectUri` | If true, skip redirect URI validation for this client (dev only) |
 | `clientSecret` | If set → confidential client |
 | `theme` | Optional theme id for login/consent |
 

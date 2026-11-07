@@ -104,13 +104,13 @@ func (s *OAuthService) BeginAuthorize(query AuthorizeQuery, user *model.User) Au
 	if !ok {
 		return AuthorizeResult{Type: AuthorizeServerError, Error: "unauthorized_client"}
 	}
-	if query.RedirectURI == "" || client.RedirectURI != query.RedirectURI {
+	if query.RedirectURI == "" || !client.AllowsRedirectURI(query.RedirectURI) {
 		return AuthorizeResult{Type: AuthorizeServerError, Error: "invalid_request"}
 	}
 	if query.ResponseType != "code" && query.ResponseType != "token" {
 		return AuthorizeResult{
 			Type:        AuthorizeRedirectError,
-			RedirectURL: BuildRedirectError(client.RedirectURI, "unsupported_response_type", query.State, query.ResponseType == "token"),
+			RedirectURL: BuildRedirectError(query.RedirectURI, "unsupported_response_type", query.State, query.ResponseType == "token"),
 			Error:       "unsupported_response_type",
 			State:       query.State,
 		}
@@ -123,7 +123,7 @@ func (s *OAuthService) BeginAuthorize(query AuthorizeQuery, user *model.User) Au
 		if method != MethodS256 {
 			return AuthorizeResult{
 				Type:        AuthorizeRedirectError,
-				RedirectURL: BuildRedirectError(client.RedirectURI, "invalid_request", query.State, false),
+				RedirectURL: BuildRedirectError(query.RedirectURI, "invalid_request", query.State, false),
 				Error:       "invalid_request",
 				State:       query.State,
 			}
@@ -374,11 +374,13 @@ func validateClientSecret(client *model.OAuthClient, provided string) bool {
 }
 
 func resolveRedirectURI(requested string, client *model.OAuthClient, code model.AuthorizationCode) string {
-	if strings.TrimSpace(requested) != "" {
-		return strings.TrimSpace(requested)
+	requested = strings.TrimSpace(requested)
+	if requested != "" {
+		return requested
 	}
-	if client.RedirectURI == code.RedirectURI {
-		return client.RedirectURI
+	// Omitted redirect_uri is allowed only when the code's URI is still permitted for the client.
+	if client != nil && client.AllowsRedirectURI(code.RedirectURI) {
+		return code.RedirectURI
 	}
 	return requested
 }

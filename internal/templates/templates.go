@@ -210,16 +210,28 @@ func enrichClients(ctx map[string]any) {
 		if msgs != nil {
 			confirm = msgs.Get(lang, "admin.clients.confirmDelete", c.ClientID)
 		}
+		redirectDisplay := strings.Join(c.AllowedRedirectURIs(), ", ")
+		if c.AllowAnyRedirectURI {
+			if msgs != nil {
+				redirectDisplay = msgs.Get(lang, "admin.clients.allowAnyRedirectUri")
+			} else {
+				redirectDisplay = "any"
+			}
+			if uris := c.AllowedRedirectURIs(); len(uris) > 0 {
+				redirectDisplay += " (" + strings.Join(uris, ", ") + ")"
+			}
+		}
 		rows = append(rows, map[string]any{
-			"clientId":      c.ClientID,
-			"displayName":   c.DisplayName,
-			"displayLabel":  c.DisplayLabel(),
-			"redirectUri":   c.RedirectURI,
-			"theme":         c.Theme,
-			"themeLabel":    themeLabel(c.Theme),
-			"confidential":  c.IsConfidential(),
-			"confirmDelete": confirm,
-			"editHref":      basePath + "/admin/clients/" + url.PathEscape(c.ClientID) + "/edit",
+			"clientId":            c.ClientID,
+			"displayName":         c.DisplayName,
+			"displayLabel":        c.DisplayLabel(),
+			"redirectUri":         redirectDisplay,
+			"allowAnyRedirectUri": c.AllowAnyRedirectURI,
+			"theme":               c.Theme,
+			"themeLabel":          themeLabel(c.Theme),
+			"confidential":        c.IsConfidential(),
+			"confirmDelete":       confirm,
+			"editHref":            basePath + "/admin/clients/" + url.PathEscape(c.ClientID) + "/edit",
 		})
 	}
 	ctx["clientRows"] = rows
@@ -285,25 +297,33 @@ func enrichClientCreated(ctx map[string]any) {
 	switch c := ctx["client"].(type) {
 	case *model.OAuthClient:
 		ctx["client"] = map[string]any{
-			"clientId":     c.ClientID,
-			"displayName":  c.DisplayName,
-			"redirectUri":  c.RedirectURI,
-			"clientSecret": c.ClientSecret,
-			"theme":        c.Theme,
+			"clientId":            c.ClientID,
+			"displayName":         c.DisplayName,
+			"redirectUri":         strings.Join(c.AllowedRedirectURIs(), "\n"),
+			"redirectUris":        c.AllowedRedirectURIs(),
+			"allowAnyRedirectUri": c.AllowAnyRedirectURI,
+			"clientSecret":        c.ClientSecret,
+			"theme":               c.Theme,
 		}
 		ctx["clientConfidential"] = c.IsConfidential()
+		ctx["clientAllowAnyRedirectUri"] = c.AllowAnyRedirectURI
 	case model.OAuthClient:
 		ctx["client"] = map[string]any{
-			"clientId":     c.ClientID,
-			"displayName":  c.DisplayName,
-			"redirectUri":  c.RedirectURI,
-			"clientSecret": c.ClientSecret,
-			"theme":        c.Theme,
+			"clientId":            c.ClientID,
+			"displayName":         c.DisplayName,
+			"redirectUri":         strings.Join(c.AllowedRedirectURIs(), "\n"),
+			"redirectUris":        c.AllowedRedirectURIs(),
+			"allowAnyRedirectUri": c.AllowAnyRedirectURI,
+			"clientSecret":        c.ClientSecret,
+			"theme":               c.Theme,
 		}
 		ctx["clientConfidential"] = c.IsConfidential()
+		ctx["clientAllowAnyRedirectUri"] = c.AllowAnyRedirectURI
 	case map[string]any:
 		secret, _ := c["clientSecret"].(string)
 		ctx["clientConfidential"] = secret != ""
+		allowAny, _ := c["allowAnyRedirectUri"].(bool)
+		ctx["clientAllowAnyRedirectUri"] = allowAny
 	}
 }
 
@@ -328,6 +348,9 @@ func enrichClientForm(ctx map[string]any) {
 		} else {
 			ctx["formRedirectUriValue"] = ""
 		}
+	}
+	if _, ok := ctx["formAllowAnyRedirectUri"]; !ok {
+		ctx["formAllowAnyRedirectUri"] = false
 	}
 	if _, ok := ctx["formTheme"]; !ok {
 		ctx["formTheme"] = ""

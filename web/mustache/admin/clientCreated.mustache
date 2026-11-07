@@ -13,7 +13,14 @@
       <dd>{{client.displayName}}</dd>
     {{/client.displayName}}
     <dt>{{t.admin.clientCreated.redirectUri}}</dt>
-    <dd>{{client.redirectUri}}</dd>
+    <dd>
+      {{#clientAllowAnyRedirectUri}}
+        <span class="badge">{{t.admin.clients.allowAnyRedirectUri}}</span>
+      {{/clientAllowAnyRedirectUri}}
+      {{#client.redirectUri}}
+        <pre class="uri-list">{{client.redirectUri}}</pre>
+      {{/client.redirectUri}}
+    </dd>
     <dt>{{t.admin.clientCreated.type}}</dt>
     <dd>
       {{#clientConfidential}}
