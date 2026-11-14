@@ -384,6 +384,7 @@ func (s *Server) adminSettingsMailPage(w http.ResponseWriter, r *http.Request) {
 		model[k] = v
 	}
 	model["formEnabled"] = cfg.Enabled
+	model["formLoginByEmailEnabled"] = cfg.LoginByEmailEnabled
 	model["formSmtpHost"] = cfg.SmtpHost
 	model["formSmtpPort"] = cfg.SmtpPort
 	model["formUsername"] = cfg.Username
@@ -409,6 +410,7 @@ func (s *Server) adminSettingsMailUpdate(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	s.rt.Config.Mail.Enabled = r.Form.Get("enabled") == "true"
+	s.rt.Config.Mail.LoginByEmailEnabled = r.Form.Get("loginByEmailEnabled") == "true"
 	s.rt.Config.Mail.SmtpHost = strings.TrimSpace(r.Form.Get("smtpHost"))
 	s.rt.Config.Mail.SmtpPort = port
 	s.rt.Config.Mail.Username = strings.TrimSpace(r.Form.Get("username"))
@@ -421,6 +423,7 @@ func (s *Server) adminSettingsMailUpdate(w http.ResponseWriter, r *http.Request)
 	prevSecurity := s.rt.Config.Security
 	if !s.rt.Config.Mail.Enabled {
 		s.rt.Config.Security.PublicRegistrationEnabled = false
+		s.rt.Config.Mail.LoginByEmailEnabled = false
 	}
 	if err := s.saveAppConfig(); err != nil {
 		s.rt.Config.Mail = prev

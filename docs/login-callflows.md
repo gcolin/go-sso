@@ -13,6 +13,7 @@ Les flèches `S->>J` marquent une réécriture **en place** de `sso-server.json`
 | `datanode_sso_session`                      | `sso_session`          | Session authentifiée                                                                 |
 | `datanode_sso_session_pending_registration` | `pending_registration` | Login temporaire après inscription / renvoi mail (TTL = `emailVerificationTtlHours`) |
 | `datanode_sso_session_pending_2fa`          | `pending_2fa`          | 2FA en cours (API)                                                                   |
+| `datanode_sso_session_pending_email_login`  | `pending_email_login`  | Challenge OTP email (même `jti` que le store RAM, TTL 10 min)                         |
 
 
 
@@ -23,7 +24,8 @@ Les flèches `S->>J` marquent une réécriture **en place** de `sso-server.json`
 | Opération                             | Quand                          | Champs typiques                                                  |
 | ------------------------------------- | ------------------------------ | ---------------------------------------------------------------- |
 | `Create`                              | `POST /register`               | `users[]` + nouvel user (`emailVerified: false` si mail enabled) |
-| `MarkEmailVerified`                   | `GET /verify-email`            | `users[].emailVerified = true`                                   |
+| `CreateVerifiedPasswordless`          | `POST /login/email/verify` (compte inconnu) | nouveau user sans mot de passe, `emailVerified: true` |
+| `MarkEmailVerified`                   | `GET /verify-email` ou OTP email | `users[].emailVerified = true`                                 |
 | `ResolveExternalLogin` (lier)         | callback IdP, email déjà connu | `authProvider`, `externalSubject`, `emailVerified: true`         |
 | `ResolveExternalLogin` (provisionner) | callback IdP + `autoProvision` | nouveau user fédéré (`emailVerified: true`)                      |
 
@@ -254,6 +256,39 @@ sequenceDiagram
 
 
 
+## Connexion / inscription par email (OTP)
+
+Nécessite `mail.enabled` et `mail.loginByEmailEnabled`. Pas de 2FA après succès OTP.
+Rien n’est écrit sur disque tant que le code n’est pas validé (store OTP en RAM).
+
+```mermaid
+sequenceDiagram
+  actor U as Utilisateur
+  participant B as Navigateur
+  participant S as SSO
+  participant M as SMTP
+
+  U->>B: Se connecter par email
+  B->>S: GET /login/email
+  U->>B: saisit email
+  B->>S: POST /login/email
+  S->>S: jti + store OTP(jti) + cookie JWT(jti) 10min
+  S->>M: email avec code 6 chiffres
+  S-->>B: 302 /login/email/verify
+  U->>B: saisit le code
+  B->>S: POST /login/email/verify
+  S->>S: lit jti du cookie puis Consume store[jti]
+  alt compte inexistant
+    S->>S: CreateVerifiedPasswordless
+  else compte existant
+    S->>S: MarkEmailVerified si besoin
+  end
+  S->>S: WriteSession (skip 2FA)
+  S-->>B: 302 returnUrl
+```
+
+---
+
 ## Pages HTML liées
 
 
@@ -261,6 +296,7 @@ sequenceDiagram
 | ------------------------- | ----------------- | -------------------- |
 | `POST /register`          | Inscription       | `Create` → `users[]` |
 | `GET /verify-email`       | Activation mail   | `MarkEmailVerified`  |
+| `POST /login/email/verify`| OTP email         | create / mark verified |
 | `GET /auth/callback/{id}` | Retour fédération | liaison ou provision |
 
 
@@ -279,6 +315,7 @@ sequenceDiagram
   },
   "mail": {
     "enabled": true,
+    "loginByEmailEnabled": true,
     "smtpHost": "…",
     "smtpPort": 587,
     "fromAddress": "…",
@@ -287,4 +324,4 @@ sequenceDiagram
 }
 ```
 
-Si `mail.enabled` est `false`, les comptes créés sont utilisables immédiatement (pas de `emailVerified=false`).
+Si `mail.enabled` est `false`, les comptes créés sont utilisables immédiatement (pas de `emailVerified=false`), et `loginByEmailEnabled` est forcé à `false`.

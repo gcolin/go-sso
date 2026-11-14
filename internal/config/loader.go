@@ -140,10 +140,9 @@ func Validate(cfg *AppConfig) error {
 			if strings.TrimSpace(u.ExternalSubject) == "" {
 				return fmt.Errorf("external users require externalSubject: %s", u.Email)
 			}
-		} else {
-			if strings.TrimSpace(u.PasswordHash) == "" {
-				return fmt.Errorf("each user requires passwordHash unless authProvider is set")
-			}
+		} else if strings.TrimSpace(u.PasswordHash) != "" {
+			// Local password account. Empty passwordHash is allowed for passwordless
+			// email-OTP users (no authProvider).
 			if !isValidPasswordHashFormat(u.PasswordHash) {
 				return fmt.Errorf("user passwordHash must be a PBKDF2 hash (pbkdf2-sha256$... or pbkdf2-sha512$...): %s", u.Email)
 			}

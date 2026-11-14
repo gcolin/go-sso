@@ -5,7 +5,7 @@ import (
 )
 
 // csrfSubject returns the user id the CSRF token must be bound to for this request.
-// Prefer full session, then pending 2FA, then pending registration; empty = anonymous.
+// Prefer full session, then pending 2FA, then pending registration, then pending email login; empty = anonymous.
 func (s *Server) csrfSubject(r *http.Request) string {
 	if u := s.rt.Sessions.CurrentUser(r); u != nil {
 		return u.ID
@@ -15,6 +15,9 @@ func (s *Server) csrfSubject(r *http.Request) string {
 	}
 	if p, ok := s.rt.Sessions.ResolvePendingRegistration(r); ok && p != nil {
 		return p.UserID
+	}
+	if p, ok := s.rt.Sessions.ResolvePendingEmailLogin(r); ok && p != nil {
+		return p.Email
 	}
 	return ""
 }

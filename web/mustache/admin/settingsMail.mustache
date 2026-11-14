@@ -12,6 +12,11 @@
       <input type="checkbox" id="enabled" name="enabled" value="true"{{#formEnabled}} checked{{/formEnabled}}/>
       {{t.admin.settings.mail.enabled}}
     </label>
+    <label for="loginByEmailEnabled">
+      <input type="checkbox" id="loginByEmailEnabled" name="loginByEmailEnabled" value="true"{{#formLoginByEmailEnabled}} checked{{/formLoginByEmailEnabled}}{{^formEnabled}} disabled{{/formEnabled}}/>
+      {{t.admin.settings.mail.loginByEmailEnabled}}
+    </label>
+    <p class="hint">{{t.admin.settings.mail.loginByEmailNeedsMail}}</p>
     <label for="smtpHost">{{t.admin.settings.mail.smtpHost}}
       <input id="smtpHost" name="smtpHost" type="text" required value="{{formSmtpHost}}"/>
     </label>

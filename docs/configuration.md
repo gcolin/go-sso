@@ -86,12 +86,14 @@ See [federation-google-microsoft.md](federation-google-microsoft.md) for vendor 
 | Field | Description |
 |-------|-------------|
 | `enabled` | Turn on SMTP |
+| `loginByEmailEnabled` | Allow passwordless sign-in / sign-up via email OTP (requires `enabled`) |
 | `smtpHost` / `smtpPort` | Server |
 | `smtpUser` / `smtpPassword` | Auth (optional) |
 | `fromName` / `fromAddress` | From header |
 | `startTls` | Prefer STARTTLS |
 
 Public registration requires mail (verification) when enabled in security settings.
+Email login (`loginByEmailEnabled`) also requires mail to be enabled.
 
 ## `users[]`
 
@@ -99,7 +101,7 @@ Public registration requires mail (verification) when enabled in security settin
 |-------|-------------|
 | `id` | Stable user id (JWT `sub`) |
 | `email` | Login identifier |
-| `passwordHash` | `pbkdf2-sha256$…` or `pbkdf2-sha512$…` (optional if IdP-only) |
+| `passwordHash` | `pbkdf2-sha256$…` or `pbkdf2-sha512$…` (optional if IdP-only or email-OTP passwordless) |
 | `name` | Display name |
 | `type` | `user` or `admin` |
 | `totpSecret` | Base32 TOTP secret when 2FA enabled |

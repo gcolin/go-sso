@@ -31,6 +31,8 @@ type Runtime struct {
 	ExternalOAuth     *oauth.ExternalOAuthService
 	Email             *mail.EmailService
 	AccountVerify     *mail.AccountVerificationService
+	EmailLogin        *mail.EmailLoginService
+	EmailLoginOTPs    *security.EmailLoginOTPStore
 	Messages          *i18n.Messages
 	Templates         *templates.Renderer
 	Themes            *themes.Registry
@@ -73,32 +75,36 @@ func Create(cfg *config.AppConfig, loader *config.Loader) (*Runtime, error) {
 	extOAuth := oauth.NewExternalOAuthService(cfg, idProviders, extStates, userRegistry)
 	emailSvc := mail.NewEmailService(cfg)
 	accountVerify := mail.NewAccountVerificationService(cfg, emailSvc, tpl, jwt, userRegistry, msgs)
+	emailLoginOTPs := security.NewEmailLoginOTPStore()
+	emailLogin := mail.NewEmailLoginService(cfg, emailSvc, tpl, jwt, emailLoginOTPs, msgs)
 
 	return &Runtime{
-		Config:        cfg,
-		Loader:        loader,
-		JWT:           jwt,
-		Jwt:           jwt,
-		Users:         users,
-		Passwords:     passwords,
-		UserReg:       userRegistry,
-		UserRegistry:  userRegistry,
-		TotpSetup:     totpSetup,
-		Sessions:      sessions,
-		RateLimit:     rateLimiter,
-		RateLimiter:   rateLimiter,
-		Clients:       oauthClients,
-		OAuthClients:  oauthClients,
-		OAuth:         oauthSvc,
-		AuthCodes:     authCodes,
-		AuthRequests:  authRequests,
-		Consent:       consent,
-		IdProviders:   idProviders,
-		ExternalOAuth: extOAuth,
-		Email:         emailSvc,
-		AccountVerify: accountVerify,
-		Messages:      msgs,
-		Templates:     tpl,
-		Themes:        themeReg,
+		Config:         cfg,
+		Loader:         loader,
+		JWT:            jwt,
+		Jwt:            jwt,
+		Users:          users,
+		Passwords:      passwords,
+		UserReg:        userRegistry,
+		UserRegistry:   userRegistry,
+		TotpSetup:      totpSetup,
+		Sessions:       sessions,
+		RateLimit:      rateLimiter,
+		RateLimiter:    rateLimiter,
+		Clients:        oauthClients,
+		OAuthClients:   oauthClients,
+		OAuth:          oauthSvc,
+		AuthCodes:      authCodes,
+		AuthRequests:   authRequests,
+		Consent:        consent,
+		IdProviders:    idProviders,
+		ExternalOAuth:  extOAuth,
+		Email:          emailSvc,
+		AccountVerify:  accountVerify,
+		EmailLogin:     emailLogin,
+		EmailLoginOTPs: emailLoginOTPs,
+		Messages:       msgs,
+		Templates:      tpl,
+		Themes:         themeReg,
 	}, nil
 }

@@ -165,6 +165,7 @@ func (s *Server) renderLoginWithError(w http.ResponseWriter, r *http.Request, re
 	}
 	s.applyClientTheme(r, model)
 	model["publicRegistrationEnabled"] = s.publicRegistrationAllowed()
+	model["emailLoginEnabled"] = s.emailLoginAllowed()
 	model["identityProviders"] = s.identityProviderViews(returnURL)
 	if messageKey != "" {
 		model["message"] = s.rt.Messages.Resolve(s.lang(r), messageKey, messageKey)
@@ -210,6 +211,7 @@ func (s *Server) loginFormSubmit(w http.ResponseWriter, r *http.Request) {
 		s.applyClientTheme(r, model)
 		model["error"] = s.rt.Messages.Resolve(s.lang(r), "error.login.invalidCredentials", "invalid credentials")
 		model["publicRegistrationEnabled"] = s.publicRegistrationAllowed()
+		model["emailLoginEnabled"] = s.emailLoginAllowed()
 		model["identityProviders"] = s.identityProviderViews(returnURL)
 		s.render(w, http.StatusUnauthorized, "login", model)
 		return

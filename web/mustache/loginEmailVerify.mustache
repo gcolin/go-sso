@@ -1,0 +1,16 @@
+<h1>{{t.loginEmailVerify.heading}}</h1>
+<p class="hint">{{#m}}loginEmailVerify.hint|{{email}}{{/m}}</p>
+{{> alerts}}
+
+<form method="post" action="{{basePath}}/login/email/verify">
+  {{> csrfField}}
+  <label for="code">{{t.loginEmailVerify.code}}
+    <input id="code" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}"
+           maxlength="6" required autofocus autocomplete="one-time-code" placeholder="000000"/>
+  </label>
+  <button type="submit">{{t.loginEmailVerify.submit}}</button>
+</form>
+
+<p class="after-form">
+  <a href="{{basePath}}/login/email?returnUrl={{returnUrlEncoded}}{{#clientId}}&amp;clientId={{clientId}}{{/clientId}}">{{t.loginEmailVerify.resend}}</a>
+</p>

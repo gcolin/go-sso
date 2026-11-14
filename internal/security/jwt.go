@@ -22,9 +22,11 @@ const (
 	TokenTypePending2FA          = "pending_2fa"
 	TokenTypeEmailVerification   = "email_verification"
 	TokenTypePendingRegistration = "pending_registration"
+	TokenTypePendingEmailLogin   = "pending_email_login"
 	TokenTypeCSRF                = "sso_csrf"
 	KeyID                        = "sso-rsa-key"
 	pending2FATTLSeconds         = 300
+	EmailLoginOTPTTLSeconds      = 600
 )
 
 // JwtService signs and verifies SSO JWTs (RS256, wire-compatible with Java).
@@ -177,6 +179,35 @@ func (j *JwtService) CreatePending2FAToken(userID, email, returnURL string) (str
 	return j.sign(claims)
 }
 
+// CreatePendingEmailLoginToken signs a pending email-login cookie JWT bound to jti (OTP store key).
+func (j *JwtService) CreatePendingEmailLoginToken(jti, email, returnURL, clientID string) (string, error) {
+	email = strings.TrimSpace(email)
+	if email == "" {
+		return "", fmt.Errorf("email is required")
+	}
+	if strings.TrimSpace(jti) == "" {
+		jti = newID()
+	}
+	if returnURL == "" {
+		returnURL = "/"
+	}
+	now := time.Now().Unix()
+	claims := map[string]any{
+		"jti":       jti,
+		"iss":       j.Issuer(),
+		"sub":       email,
+		"email":     email,
+		"returnUrl": returnURL,
+		"type":      TokenTypePendingEmailLogin,
+		"iat":       now,
+		"exp":       now + EmailLoginOTPTTLSeconds,
+	}
+	if id := strings.TrimSpace(clientID); id != "" {
+		claims["client_id"] = id
+	}
+	return j.sign(claims)
+}
+
 func (j *JwtService) CreateEmailVerificationToken(userID, email string) (string, error) {
 	now := time.Now().Unix()
 	claims := map[string]any{
@@ -259,6 +290,13 @@ type Pending2FAClaims struct {
 	ReturnURL string
 }
 
+type PendingEmailLoginClaims struct {
+	JTI       string
+	Email     string
+	ReturnURL string
+	ClientID  string
+}
+
 func (j *JwtService) ParseSessionToken(token string) (*SessionClaims, error) {
 	claims, err := j.verify(token, TokenTypeSession)
 	if err != nil {
@@ -301,6 +339,31 @@ func (j *JwtService) ParsePending2FAToken(token string) (*Pending2FAClaims, erro
 		UserID:    claimString(claims, "sub"),
 		Email:     claimString(claims, "email"),
 		ReturnURL: returnURL,
+	}, nil
+}
+
+func (j *JwtService) ParsePendingEmailLoginToken(token string) (*PendingEmailLoginClaims, error) {
+	claims, err := j.verify(token, TokenTypePendingEmailLogin)
+	if err != nil {
+		return nil, err
+	}
+	jti := claimString(claims, "jti")
+	email := claimString(claims, "email")
+	if email == "" {
+		email = claimString(claims, "sub")
+	}
+	if jti == "" || email == "" {
+		return nil, fmt.Errorf("invalid pending email login token")
+	}
+	returnURL := claimString(claims, "returnUrl")
+	if returnURL == "" {
+		returnURL = "/"
+	}
+	return &PendingEmailLoginClaims{
+		JTI:       jti,
+		Email:     email,
+		ReturnURL: returnURL,
+		ClientID:  claimString(claims, "client_id"),
 	}, nil
 }
 

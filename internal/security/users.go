@@ -251,6 +251,34 @@ func (r *UserRegistry) Create(email, name, typ, password string, maxStorageBytes
 	return r.createInternal(email, password, name, typ, maxPtr)
 }
 
+// CreateVerifiedPasswordless creates a local user with verified email and no password (email-OTP login).
+func (r *UserRegistry) CreateVerifiedPasswordless(email string) (*model.User, error) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	email = strings.TrimSpace(email)
+	if email == "" || !strings.Contains(email, "@") {
+		return nil, &UserValidationError{Msg: "email is invalid"}
+	}
+	if _, exists := r.dir.FindByEmail(email); exists {
+		return nil, &ConflictError{Message: "email already in use: " + email}
+	}
+	verified := true
+	u := model.User{
+		ID:            newUserID(),
+		Email:         email,
+		Type:          model.TypeUser,
+		EmailVerified: &verified,
+	}
+	r.cfg.Users = append(r.cfg.Users, u)
+	if err := r.loader.Save(r.cfg); err != nil {
+		r.cfg.Users = r.cfg.Users[:len(r.cfg.Users)-1]
+		return nil, err
+	}
+	r.dir.Reload()
+	created, _ := r.dir.FindByID(u.ID)
+	return created, nil
+}
+
 func (r *UserRegistry) createInternal(email, password, name, typ string, maxStorageBytes *int64) (*model.User, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()

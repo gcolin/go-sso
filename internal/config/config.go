@@ -139,14 +139,15 @@ type FederationConfig struct {
 }
 
 type MailConfig struct {
-	Enabled     bool   `json:"enabled"`
-	SmtpHost    string `json:"smtpHost"`
-	SmtpPort    int    `json:"smtpPort"`
-	Username    string `json:"username,omitempty"`
-	Password    string `json:"password,omitempty"`
-	FromAddress string `json:"fromAddress,omitempty"`
-	FromName    string `json:"fromName,omitempty"`
-	StartTLS    bool   `json:"startTls"`
+	Enabled              bool   `json:"enabled"`
+	LoginByEmailEnabled  bool   `json:"loginByEmailEnabled"`
+	SmtpHost             string `json:"smtpHost"`
+	SmtpPort             int    `json:"smtpPort"`
+	Username             string `json:"username,omitempty"`
+	Password             string `json:"password,omitempty"`
+	FromAddress          string `json:"fromAddress,omitempty"`
+	FromName             string `json:"fromName,omitempty"`
+	StartTLS             bool   `json:"startTls"`
 }
 
 // Defaults applies Java-like defaults for missing nested objects.

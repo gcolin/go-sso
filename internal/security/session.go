@@ -10,8 +10,9 @@ import (
 )
 
 const (
-	pending2FACookieSuffix         = "_pending_2fa"
+	pending2FACookieSuffix          = "_pending_2fa"
 	pendingRegistrationCookieSuffix = "_pending_registration"
+	pendingEmailLoginCookieSuffix   = "_pending_email_login"
 )
 
 // SessionCookies manages SSO session and pending-2FA cookies.
@@ -165,6 +166,39 @@ func (s *SessionCookies) ResolvePendingRegistration(r *http.Request) (*PendingRe
 
 func (s *SessionCookies) ClearPendingRegistrationCookie(w http.ResponseWriter) {
 	s.setCookie(w, s.PendingRegistrationCookieName(), "", 0)
+}
+
+func (s *SessionCookies) PendingEmailLoginCookieName() string {
+	return s.CookieName() + pendingEmailLoginCookieSuffix
+}
+
+func (s *SessionCookies) WritePendingEmailLoginCookie(w http.ResponseWriter, jti, email, returnURL, clientID string) error {
+	token, err := s.jwt.CreatePendingEmailLoginToken(jti, email, returnURL, clientID)
+	if err != nil {
+		return err
+	}
+	s.SetPendingEmailLoginToken(w, token)
+	return nil
+}
+
+func (s *SessionCookies) SetPendingEmailLoginToken(w http.ResponseWriter, token string) {
+	s.setCookie(w, s.PendingEmailLoginCookieName(), token, EmailLoginOTPTTLSeconds)
+}
+
+func (s *SessionCookies) ResolvePendingEmailLogin(r *http.Request) (*PendingEmailLoginClaims, bool) {
+	raw, ok := readCookie(r, s.PendingEmailLoginCookieName())
+	if !ok {
+		return nil, false
+	}
+	claims, err := s.jwt.ParsePendingEmailLoginToken(raw)
+	if err != nil {
+		return nil, false
+	}
+	return claims, true
+}
+
+func (s *SessionCookies) ClearPendingEmailLoginCookie(w http.ResponseWriter) {
+	s.setCookie(w, s.PendingEmailLoginCookieName(), "", 0)
 }
 
 func (s *SessionCookies) setCookie(w http.ResponseWriter, name, value string, maxAgeSeconds int64) {

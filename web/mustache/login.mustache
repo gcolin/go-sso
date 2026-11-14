@@ -34,6 +34,12 @@
   <button type="submit">{{t.login.submit}}</button>
 </form>
 
+{{#emailLoginEnabled}}
+  <p class="after-form">
+    <a href="{{basePath}}/login/email?returnUrl={{returnUrlEncoded}}{{#clientId}}&amp;clientId={{clientId}}{{/clientId}}">{{t.login.emailLink}}</a>
+  </p>
+{{/emailLoginEnabled}}
+
 {{#publicRegistrationEnabled}}
   <p class="after-form">
     <a href="{{basePath}}/register?returnUrl={{returnUrlEncoded}}{{#clientId}}&amp;clientId={{clientId}}{{/clientId}}">{{t.login.registerLink}}</a>
