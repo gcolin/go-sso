@@ -17,8 +17,25 @@
         {{#m}}login.withProvider|{{displayName}}{{/m}}
       </a>
     {{/identityProviders}}
+    {{#emailLoginEnabled}}
+      <a role="button" class="outline" href="{{basePath}}/login/email?returnUrl={{returnUrlEncoded}}{{#clientId}}&amp;clientId={{clientId}}{{/clientId}}">
+        <i class="idp-logo bi bi-envelope" aria-hidden="true"></i>
+        {{t.login.emailLink}}
+      </a>
+    {{/emailLoginEnabled}}
   </div>
   <p class="hint center">{{t.login.orLocal}}</p>
+{{/hasIdentityProviders}}
+{{^hasIdentityProviders}}
+  {{#emailLoginEnabled}}
+    <div class="stack">
+      <a role="button" class="outline" href="{{basePath}}/login/email?returnUrl={{returnUrlEncoded}}{{#clientId}}&amp;clientId={{clientId}}{{/clientId}}">
+        <i class="idp-logo bi bi-envelope" aria-hidden="true"></i>
+        {{t.login.emailLink}}
+      </a>
+    </div>
+    <p class="hint center">{{t.login.orLocal}}</p>
+  {{/emailLoginEnabled}}
 {{/hasIdentityProviders}}
 
 <form method="post" action="{{basePath}}/login">
@@ -33,12 +50,6 @@
   </label>
   <button type="submit">{{t.login.submit}}</button>
 </form>
-
-{{#emailLoginEnabled}}
-  <p class="after-form">
-    <a href="{{basePath}}/login/email?returnUrl={{returnUrlEncoded}}{{#clientId}}&amp;clientId={{clientId}}{{/clientId}}">{{t.login.emailLink}}</a>
-  </p>
-{{/emailLoginEnabled}}
 
 {{#publicRegistrationEnabled}}
   <p class="after-form">
